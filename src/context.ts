@@ -45,14 +45,13 @@ export const createInnerContext = (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createContext = async (opts: trpcExpress.CreateExpressContextOptions) => {
-    const { req, res } = opts;
-
-    // Get the session from the server using the unstable_getServerSession wrapper function
-    const session = await supabase.auth.getUser();
-
-    return createInnerContext({
-        session,
-    });
+    const { req } = opts;
+    try {
+        let session = await supabase.auth.getUser(req.params.accessToken);
+        return createInnerContext({ session });
+    } catch {
+        return createInnerContext({});
+    }
 };
 
 export type Context = inferAsyncReturnType<typeof createContext>;
