@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import { inferProcedureInput } from "@trpc/server";
 import { AppRouter, appRouter } from "../src/routers/_app";
 import { createInnerContext } from "../src/context";

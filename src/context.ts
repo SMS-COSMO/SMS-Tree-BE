@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
-// import { Session } from "@supabase/gotrue-js/src/lib/types";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { env } from "./env";
 import { inferAsyncReturnType } from "@trpc/server";
@@ -16,10 +15,6 @@ const prisma: PrismaClient =
     new PrismaClient({
         log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
     });
-
-// if (env.NODE_ENV !== "production") {
-//     newGlobal.prisma = prisma;
-// }
 
 const supabase: SupabaseClient = newGlobal.supabase || new SupabaseClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 
