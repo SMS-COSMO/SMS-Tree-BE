@@ -24,7 +24,7 @@ const prisma: PrismaClient =
 const supabase: SupabaseClient = newGlobal.supabase || new SupabaseClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 
 type CreateContextOptions = {
-    session: UserResponse;
+    session?: UserResponse;
 };
 
 /**
@@ -36,7 +36,7 @@ type CreateContextOptions = {
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @credits https://create.t3.gg/en/usage/trpc#-servertrpccontextts'
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+export const createInnerContext = (opts: CreateContextOptions) => {
     return {
         session: opts.session,
         prisma,
@@ -55,7 +55,7 @@ export const createContext = async (opts: trpcExpress.CreateExpressContextOption
     // Get the session from the server using the unstable_getServerSession wrapper function
     const session = await supabase.auth.getUser();
 
-    return createInnerTRPCContext({
+    return createInnerContext({
         session,
     });
 };
