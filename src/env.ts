@@ -1,11 +1,16 @@
 import * as dotenv from "dotenv";
 import { z } from "zod";
 dotenv.config();
+dotenv.config({ path: `.env.local`, override: true });
 const envSchema = z.object({
     DATABASE_URL: z.string().url(),
-    SUPABASE_URL: z.string(),
-    SUPABASE_KEY: z.string(),
-    NODE_ENV: z.enum(["development", "test", "production"]),
+    NODE_ENV: z.enum(["development", "production"]),
+    SIGN_PUBLIC_KEY: z.string(),
+    SIGN_PRIVATE_KEY: z.string(),
+    ENC_PUBLIC_KEY: z.string(),
+    ENC_PRIVATE_KEY: z.string(),
+    SIGN_KID: z.string(),
+    ENC_KID: z.string(),
 });
 
 const envParse = envSchema.safeParse(process.env);
