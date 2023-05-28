@@ -111,3 +111,6 @@ dist
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# drizzle migration folder
+drizzle/
