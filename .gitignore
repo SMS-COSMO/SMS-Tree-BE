@@ -1,5 +1,6 @@
 # env
 .env
+.env.local
 
 # Logs
 logs
@@ -110,3 +111,6 @@ dist
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# drizzle migration folder
+drizzle/

@@ -1,0 +1,4 @@
+{
+    "schema": "./src/db/schema/*",
+    "out": "./drizzle"
+}

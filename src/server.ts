@@ -2,9 +2,12 @@ import * as trpcExpress from "@trpc/server/adapters/express";
 import { createContext } from "./context";
 import { AppRouter, appRouter } from "./routers/_app";
 import express from "express";
+import { env } from "./env";
+import { renderTrpcPanel } from "trpc-panel";
 
 async function server() {
     const app = express();
+    const port = process.env.PORT || 3000;
 
     // simple request logger
     app.use((req, _res, next) => {
@@ -21,7 +24,15 @@ async function server() {
             createContext,
         })
     );
-    app.listen(process.env.PORT || 3000, () => console.log("Server is on!"));
+
+    // trpc-panel link: https://github.com/iway1/trpc-panel
+    if (env.NODE_ENV == "development") {
+        app.use("/panel", (_, res) => {
+            return res.send(renderTrpcPanel(appRouter, { url: `http://localhost:${port}/trpc` }));
+        });
+    }
+
+    app.listen(port, () => console.log("Server is on!"));
 }
 
 server().then();

@@ -1,41 +1,28 @@
-import { PrismaClient } from "@prisma/client";
-import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { env } from "./env";
 import { inferAsyncReturnType } from "@trpc/server";
+import { db } from "./db/db";
+import { Auth } from "./db/auth";
 
-const newGlobal = global as typeof global & {
-    prisma?: PrismaClient;
-    supabase?: SupabaseClient;
-};
-
-// initiates prisma client and supabase client
-const prisma: PrismaClient =
-    newGlobal.prisma ||
-    new PrismaClient({
-        log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-    });
-
-const supabase: SupabaseClient = newGlobal.supabase || new SupabaseClient(env.SUPABASE_URL, env.SUPABASE_KEY);
+declare global {
+    var auth: Auth | undefined;
+}
+const auth = global.auth || new Auth();
+global.auth = auth;
 
 type CreateContextOptions = {
-    session?: UserResponse;
+    user?: string;
 };
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use
  * it, you can export it from here
- *
- * Examples of things you may need it for:
- * - testing, so we dont have to mock Next.js' req/res
- * - trpc's `createSSGHelpers` where we don't have req/res
  * @credits https://create.t3.gg/en/usage/trpc#-servertrpccontextts'
  */
 export const createInnerContext = (opts: CreateContextOptions) => {
     return {
-        session: opts.session,
-        prisma,
-        supabase,
+        user: opts.user,
+        db: db,
+        auth: auth,
     };
 };
 
@@ -45,14 +32,9 @@ export const createInnerContext = (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createContext = async (opts: trpcExpress.CreateExpressContextOptions) => {
-    const { req, res } = opts;
-
-    // Get the session from the server using the unstable_getServerSession wrapper function
-    const session = await supabase.auth.getUser();
-
-    return createInnerContext({
-        session,
-    });
+    const { req } = opts;
+    let user = await auth.getUserFromHeader(req);
+    return createInnerContext({ user });
 };
 
 export type Context = inferAsyncReturnType<typeof createContext>;
