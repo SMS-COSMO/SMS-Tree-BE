@@ -8,3 +8,10 @@
 -   文件目录结构（纠结`auth.ts`这种文件放在哪里好）
 -   代码审计 优化代码
 -   自动化测试
+
+## 可参考的资源
+
+-   drizzle-orm 文档： https://orm.drizzle.team/docs/quick-start
+-   trpc 文档： https://trpc.io/docs/
+-   测试服务器： https://sms-tree-backend-raimoethedev.koyeb.app/trpc
+-   测试服务器生成的文档： https://sms-tree-backend-raimoethedev.koyeb.app/panel (注：这个文档中的 execute 功能不能用)
