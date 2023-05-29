@@ -32,7 +32,7 @@ async function server() {
         });
     }
 
-    app.listen(port, () => console.log("Server is on!"));
+    app.listen(port, () => console.log(`Server is listening at ${port}!`));
 }
 
 server().then();
