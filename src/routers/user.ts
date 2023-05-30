@@ -1,8 +1,6 @@
 import { router, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-// import { insertRefreshToken, insertUser, getUser } from "../db/db";
-import { nanoid } from "nanoid";
 
 export const userRouter = router({
     register: publicProcedure
@@ -16,5 +14,12 @@ export const userRouter = router({
             let user = await ctx.auth.login(input.username, input.password);
             if (!user) throw new TRPCError({ code: "BAD_REQUEST", message: "Please check your credentials." });
             return user;
+        }),
+    refreshAccessToken: publicProcedure
+        .input(z.object({ username: z.string(), refreshToken: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            let result = await ctx.auth.refreshAccessToken(input.refreshToken, input.username);
+            if (!result) throw new TRPCError({ code: "BAD_REQUEST", message: "Incorrect refresh token." });
+            return result;
         }),
 });

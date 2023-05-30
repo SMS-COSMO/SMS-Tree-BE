@@ -2,9 +2,9 @@ import * as jose from "jose";
 import { env } from "../env";
 import { nanoid } from "nanoid";
 import bcrypt from "bcrypt";
-import { TNewUser, TRefreshToken, db } from "./db";
+import { db } from "./db";
 import { refreshTokens, users } from "./schema/user";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 const encode = TextEncoder.prototype.encode.bind(new TextEncoder());
 const decode = TextDecoder.prototype.decode.bind(new TextDecoder());
 
@@ -13,9 +13,9 @@ let signPrivateKey = await jose.importPKCS8(env.SIGN_PRIVATE_KEY, "RS512");
 
 // TODO: refactor Auth class
 export class Auth {
-    async produceAccessToken(userId: number) {
+    async produceAccessToken(username: string) {
         let jwt = await new jose.SignJWT({})
-            .setSubject(userId.toString())
+            .setSubject(username.toString())
             .setIssuedAt()
             .setExpirationTime("24h")
             .setIssuer("sms-tree")
@@ -49,7 +49,7 @@ export class Auth {
         }
     }
 
-    async produceRefreshToken(owner: number) {
+    async produceRefreshToken(owner: string) {
         let token = nanoid(128);
         await db.insert(refreshTokens).values({ token: token, owner: owner });
         return token;
@@ -71,8 +71,19 @@ export class Auth {
     async login(username: string, password: string) {
         let user = (await db.select().from(users).where(eq(users.username, username)))[0];
         if (!(user && (await bcrypt.compare(password, user.password)))) return;
-        let accessToken = await this.produceAccessToken(user.id);
-        let refreshToken = await this.produceRefreshToken(user.id);
-        return { userId: user.id, accessToken: accessToken, refreshToken: refreshToken };
+        let accessToken = await this.produceAccessToken(user.username);
+        let refreshToken = await this.produceRefreshToken(user.username);
+        return { username: user.username, accessToken: accessToken, refreshToken: refreshToken };
+    }
+
+    async refreshAccessToken(refreshToken: string, username: string) {
+        let token = await db
+            .delete(refreshTokens)
+            .where(and(eq(refreshTokens.token, refreshToken), eq(refreshTokens.owner, username)))
+            .returning();
+        if (!token[0]) return;
+        let newRefreshToken = await this.produceRefreshToken(username);
+        let newAccessToken = await this.produceRefreshToken(username);
+        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     }
 }

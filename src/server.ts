@@ -1,6 +1,6 @@
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { createContext } from "./context";
-import { AppRouter, appRouter } from "./routers/_app";
+import { appRouter } from "./routers/_app";
 import express from "express";
 import { env } from "./env";
 import { renderTrpcPanel } from "trpc-panel";
