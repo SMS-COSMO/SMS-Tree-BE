@@ -28,7 +28,9 @@ async function server() {
     // trpc-panel link: https://github.com/iway1/trpc-panel
     if (env.NODE_ENV == "development") {
         app.use("/panel", (_, res) => {
-            return res.send(renderTrpcPanel(appRouter, { url: `http://localhost:${port}/trpc` }));
+            return res.send(
+                renderTrpcPanel(appRouter, { url: `http://localhost:${port}/trpc`, transformer: "superjson" })
+            );
         });
     }
 
