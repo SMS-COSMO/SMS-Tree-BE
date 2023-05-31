@@ -14,7 +14,7 @@ let signPrivateKey = await jose.importPKCS8(env.SIGN_PRIVATE_KEY, "RS512");
 // TODO: refactor Auth class
 export class Auth {
     async produceAccessToken(username: string) {
-        let jwt = await new jose.SignJWT({})
+        const jwt = await new jose.SignJWT({})
             .setSubject(username.toString())
             .setIssuedAt()
             .setExpirationTime("24h")
@@ -25,7 +25,7 @@ export class Auth {
                 kid: env.SIGN_KID,
             })
             .sign(signPrivateKey);
-        let jwe = await new jose.CompactEncrypt(encode(jwt))
+        const jwe = await new jose.CompactEncrypt(encode(jwt))
             .setProtectedHeader({
                 alg: "RSA-OAEP-256",
                 enc: "A256GCM",
@@ -37,9 +37,9 @@ export class Auth {
 
     async getUserFromToken(token: string) {
         try {
-            let signPublicKey = await jose.importSPKI(env.SIGN_PUBLIC_KEY, "RS512");
-            let encPrivateKey = await jose.importPKCS8(env.ENC_PRIVATE_KEY, "RSA-OAEP-256");
-            let { plaintext: decryptedJwt } = await jose.compactDecrypt(token, encPrivateKey);
+            const signPublicKey = await jose.importSPKI(env.SIGN_PUBLIC_KEY, "RS512");
+            const encPrivateKey = await jose.importPKCS8(env.ENC_PRIVATE_KEY, "RSA-OAEP-256");
+            const { plaintext: decryptedJwt } = await jose.compactDecrypt(token, encPrivateKey);
             const { protectedHeader, payload } = await jose.jwtVerify(decode(decryptedJwt), signPublicKey);
             return { user: payload.sub };
         } catch (err) {
@@ -50,7 +50,7 @@ export class Auth {
     }
 
     async produceRefreshToken(owner: string) {
-        let token = nanoid(128);
+        const token = nanoid(128);
         await db.insert(refreshTokens).values({ token: token, owner: owner });
         return token;
     }
@@ -63,27 +63,27 @@ export class Auth {
     }
 
     async register(username: string, password: string, role: "student" | "admin" | "teacher" = "student") {
-        let hash = await bcrypt.hash(password, 8);
-        let user = { username: username, password: hash, role: role };
+        const hash = await bcrypt.hash(password, 8);
+        const user = { username: username, password: hash, role: role };
         return db.insert(users).values(user);
     }
 
     async login(username: string, password: string) {
-        let user = (await db.select().from(users).where(eq(users.username, username)))[0];
+        const user = (await db.select().from(users).where(eq(users.username, username)))[0];
         if (!(user && (await bcrypt.compare(password, user.password)))) return;
-        let accessToken = await this.produceAccessToken(user.username);
-        let refreshToken = await this.produceRefreshToken(user.username);
+        const accessToken = await this.produceAccessToken(user.username);
+        const refreshToken = await this.produceRefreshToken(user.username);
         return { username: user.username, accessToken: accessToken, refreshToken: refreshToken };
     }
 
     async refreshAccessToken(refreshToken: string, username: string) {
-        let token = await db
+        const token = await db
             .delete(refreshTokens)
             .where(and(eq(refreshTokens.token, refreshToken), eq(refreshTokens.owner, username)))
             .returning();
         if (!token[0]) return;
-        let newRefreshToken = await this.produceRefreshToken(username);
-        let newAccessToken = await this.produceRefreshToken(username);
+        const newRefreshToken = await this.produceRefreshToken(username);
+        const newAccessToken = await this.produceRefreshToken(username);
         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     }
 }

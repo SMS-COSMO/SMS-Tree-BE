@@ -13,7 +13,7 @@ export const userRouter = router({
         .meta({ description: `@return {username: string; accessToken: string; refreshToken: string;}` })
         .input(z.object({ username: z.string(), password: z.string().min(8) }))
         .mutation(async ({ ctx, input }) => {
-            let user = await ctx.auth.login(input.username, input.password);
+            const user = await ctx.auth.login(input.username, input.password);
             if (!user) throw new TRPCError({ code: "BAD_REQUEST", message: "Please check your credentials." });
             return user;
         }),
@@ -21,7 +21,7 @@ export const userRouter = router({
         .meta({ description: `@return { accessToken: newAccessToken, refreshToken: newRefreshToken }` })
         .input(z.object({ username: z.string(), refreshToken: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            let result = await ctx.auth.refreshAccessToken(input.refreshToken, input.username);
+            const result = await ctx.auth.refreshAccessToken(input.refreshToken, input.username);
             if (!result) throw new TRPCError({ code: "BAD_REQUEST", message: "Incorrect refresh token." });
             return result;
         }),
