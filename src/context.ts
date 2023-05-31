@@ -1,7 +1,7 @@
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { inferAsyncReturnType } from "@trpc/server";
 import { db } from "./db/db";
-import { Auth } from "./db/auth";
+import { Auth } from "./utils/auth";
 
 declare global {
     var auth: Auth | undefined;
