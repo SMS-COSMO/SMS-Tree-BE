@@ -12,6 +12,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.342.0",
+        "@aws-sdk/s3-request-presigner": "^3.342.0",
         "@trpc/server": "^10.28.0",
         "bcrypt": "^5.1.0",
         "drizzle-orm": "^0.25.4",

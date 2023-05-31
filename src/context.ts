@@ -2,6 +2,7 @@ import * as trpcExpress from "@trpc/server/adapters/express";
 import { inferAsyncReturnType } from "@trpc/server";
 import { db } from "./db/db";
 import { Auth } from "./utils/auth";
+import { s3 } from "./utils/s3";
 
 declare global {
     var auth: Auth | undefined;
@@ -23,6 +24,7 @@ export const createInnerContext = (opts: CreateContextOptions) => {
         user: opts.user,
         db: db,
         auth: auth,
+        s3: s3,
     };
 };
 
