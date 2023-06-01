@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import { db } from "../db/db";
 import { refreshTokens, users } from "../db/schema/user";
 import { and, eq } from "drizzle-orm";
+import { type CreateExpressContextOptions } from "@trpc/server/adapters/express";
+
 const encode = TextEncoder.prototype.encode.bind(new TextEncoder());
 const decode = TextDecoder.prototype.decode.bind(new TextDecoder());
 
@@ -40,7 +42,7 @@ export class Auth {
             const signPublicKey = await jose.importSPKI(env.SIGN_PUBLIC_KEY, "RS512");
             const encPrivateKey = await jose.importPKCS8(env.ENC_PRIVATE_KEY, "RSA-OAEP-256");
             const { plaintext: decryptedJwt } = await jose.compactDecrypt(token, encPrivateKey);
-            const { protectedHeader, payload } = await jose.jwtVerify(decode(decryptedJwt), signPublicKey);
+            const { payload } = await jose.jwtVerify(decode(decryptedJwt), signPublicKey);
             return { user: payload.sub };
         } catch (err) {
             if (err instanceof jose.errors.JWEDecryptionFailed) return { err: err.code };
@@ -55,7 +57,7 @@ export class Auth {
         return token;
     }
 
-    async getUserFromHeader(req: any) {
+    async getUserFromHeader(req: CreateExpressContextOptions["req"]) {
         if (!req.headers.authorization) return;
         const result = await this.getUserFromToken(req.headers.authorization.split(" ")[1]);
         if (result.err) return;

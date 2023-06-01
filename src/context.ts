@@ -4,11 +4,9 @@ import { db } from "./db/db";
 import { Auth } from "./utils/auth";
 import { s3 } from "./utils/s3";
 
-declare global {
-    var auth: Auth | undefined;
-}
-const auth = global.auth || new Auth();
-global.auth = auth;
+const newGlobal = global as unknown as { auth: Auth | undefined };
+const auth = newGlobal.auth ?? new Auth();
+if (process.env.NODE_ENV !== "production") newGlobal.auth = auth;
 
 type CreateContextOptions = {
     user?: string;

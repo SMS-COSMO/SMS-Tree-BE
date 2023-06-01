@@ -7,8 +7,8 @@
         "dev": "tsx watch ./src/server.ts",
         "migrate": "drizzle-kit generate:pg && tsx ./scripts/migrate.ts",
         "start": "node --loader tsx ./src/server.ts",
-        "lint": "npx eslint .",
-        "lint:fix": "npx eslint . --fix"
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
     },
     "keywords": [],
     "author": "",

@@ -4,7 +4,7 @@ import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { refreshTokens, users } from "./schema/user";
 import { env } from "../env";
-import { InferModel, eq } from "drizzle-orm";
+import { InferModel } from "drizzle-orm";
 
 // create the connection
 const poolConnection = postgres(env.DATABASE_URL);
