@@ -33,7 +33,7 @@ export const createInnerContext = (opts: CreateContextOptions) => {
  */
 export const createContext = async (opts: trpcExpress.CreateExpressContextOptions) => {
     const { req } = opts;
-    let user = await auth.getUserFromHeader(req);
+    const user = await auth.getUserFromHeader(req);
     return createInnerContext({ user });
 };
 
