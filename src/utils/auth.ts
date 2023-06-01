@@ -59,7 +59,7 @@ export class Auth {
 
     async getUserFromHeader(req: CreateExpressContextOptions["req"]) {
         if (!req.headers.authorization) return;
-        const result = await this.getUserFromToken(req.headers.authorization.split(" ")[1]);
+        const result = await this.getUserFromToken(req.headers.authorization);
         if (result.err) return;
         return result.user;
     }
