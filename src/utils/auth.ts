@@ -8,8 +8,8 @@ import { and, eq } from "drizzle-orm";
 const encode = TextEncoder.prototype.encode.bind(new TextEncoder());
 const decode = TextDecoder.prototype.decode.bind(new TextDecoder());
 
-let encPublicKey = await jose.importSPKI(env.ENC_PUBLIC_KEY, "RSA-OAEP-256");
-let signPrivateKey = await jose.importPKCS8(env.SIGN_PRIVATE_KEY, "RS512");
+const encPublicKey = await jose.importSPKI(env.ENC_PUBLIC_KEY, "RSA-OAEP-256");
+const signPrivateKey = await jose.importPKCS8(env.SIGN_PRIVATE_KEY, "RS512");
 
 // TODO: refactor Auth class
 export class Auth {

@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { z } from "zod";
 dotenv.config();
-dotenv.config({ path: `.env.local`, override: true });
+dotenv.config({ path: ".env.local", override: true });
 const envSchema = z.object({
     DATABASE_URL: z.string().url(),
     NODE_ENV: z.enum(["development", "production"]),
