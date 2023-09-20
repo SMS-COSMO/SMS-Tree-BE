@@ -2,6 +2,7 @@ import * as trpcExpress from "@trpc/server/adapters/express";
 import { createContext } from "./context";
 import { appRouter } from "./routers/_app";
 import express from "express";
+import cors from "cors";
 import { env } from "./env";
 import { renderTrpcPanel } from "trpc-panel";
 
@@ -15,6 +16,8 @@ async function server() {
 
         next();
     });
+
+    app.use(cors({origin:"*"}));
 
     // trpc middleware
     app.use(
