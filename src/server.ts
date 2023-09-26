@@ -10,14 +10,14 @@ async function server() {
     const app = express();
     const port = process.env.PORT || 3000;
 
+    app.use(cors());
+
     // simple request logger
     app.use((req, _res, next) => {
         console.log("⬅️ ", req.method, req.path, req.body ?? req.query);
 
         next();
     });
-
-    app.use(cors({origin:"*"}));
 
     // trpc middleware
     app.use(
