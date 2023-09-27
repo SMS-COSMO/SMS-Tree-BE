@@ -13,5 +13,5 @@
 
 -   drizzle-orm 文档： https://orm.drizzle.team/docs/quick-start
 -   trpc 文档： https://trpc.io/docs/
--   测试服务器： https://sms-tree-backend-raimoethedev.koyeb.app/trpc
--   测试服务器生成的文档： https://sms-tree-backend-raimoethedev.koyeb.app/panel （注：文档自带测试功能，但是测试功能要在本地开启服务器才能用，这个部署了的文档测试用不了）
+-   测试服务器URL： https://sms-tree-backend-raimoethedev.koyeb.app/trpc
+-   测试服务器生成的文档： https://sms-tree-backend-raimoethedev.koyeb.app/panel （此文档带有在线调试功能！！）
