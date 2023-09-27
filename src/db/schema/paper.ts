@@ -7,6 +7,7 @@ export const papers = pgTable("papers", {
     abstract: text("abstract").notNull(),
     authorGroupId: integer("author_group_id").notNull(),
     status: integer("status").notNull(),
+    rate:integer("rate").notNull().default(0),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     S3FileId: text("s3_file_id").notNull()
 });
