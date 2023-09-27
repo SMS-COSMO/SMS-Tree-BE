@@ -32,7 +32,7 @@ async function server() {
     if (env.NODE_ENV == "development") {
         app.use("/panel", (_, res) => {
             return res.send(
-                renderTrpcPanel(appRouter, { url: `http://localhost:${port}/trpc`, transformer: "superjson" })
+                renderTrpcPanel(appRouter, { url: `${env.SERVER_URL}/trpc`, transformer: "superjson" })
             );
         });
     }
