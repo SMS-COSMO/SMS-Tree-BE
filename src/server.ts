@@ -6,7 +6,7 @@ import cors from "cors";
 import { env } from "./env";
 import { renderTrpcPanel } from "trpc-panel";
 
-async function server() {
+function server() {
     const app = express();
     const port = process.env.PORT || 3000;
 
@@ -40,4 +40,4 @@ async function server() {
     app.listen(port, () => console.log(`Server is listening at ${port}!`));
 }
 
-server().then();
+server();
