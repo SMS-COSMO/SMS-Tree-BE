@@ -1,25 +1,19 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { nanoid } from 'nanoid'
 import { publicProcedure, requireRoles, router } from '../trpc'
-import type { TNewUser } from '../db/db'
-import { db } from '../db/db'
-import { users } from '../db/schema/user'
-
-const bulkRegisterOptions = z.object({ randomPassword: z.boolean() })
 
 export const userRouter = router({
   register: publicProcedure
-    .meta({ description: '@return void 只实现注册功能，注册完后需要登陆' })
-    .input(z.object({ username: z.string().max(20), password: z.string().min(8) }))
+    .meta({ description: '!!现在此功能仅供测试 会创建身份为 teacher 的账户!!' })
+    .input(z.object({ id: z.string().max(12), username: z.string().max(12), password: z.string().min(8) }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.auth.register({ role: 'student', username: input.username, password: input.password })
+      await ctx.auth.register({ role: 'teacher', id: input.id, username: input.username, password: input.password })
     }),
   login: publicProcedure
-    .meta({ description: '@return {username: string; accessToken: string; refreshToken: string;}' })
-    .input(z.object({ username: z.string(), password: z.string().min(8) }))
+    .meta({ description: '@return {userId: string; accessToken: string; refreshToken: string;}' })
+    .input(z.object({ id: z.string(), password: z.string().min(8) }))
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.auth.login(input.username, input.password)
+      const user = await ctx.auth.login(input.id, input.password)
       if (!user)
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Please check your credentials.' })
       return user
@@ -40,17 +34,10 @@ export const userRouter = router({
     ` })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
-      users: z.object({ username: z.string().min(1), studentId: z.string().length(11) }).array().nonempty(),
-      options: bulkRegisterOptions.optional(),
+      users: z.object({ id: z.string().length(11), username: z.string().min(1) }).array().nonempty(),
+      randomPassword: z.boolean().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const usersArray = input.users.map(({ username, studentId }) => {
-        return {
-          role: 'student',
-          password: input.options?.randomPassword ? nanoid(12) : studentId,
-          username,
-        } as TNewUser
-      })
-      await db.insert(users).values(usersArray)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.auth.bulkRegister(input.users, input.randomPassword)
     }),
 })
