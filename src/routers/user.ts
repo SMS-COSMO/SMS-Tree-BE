@@ -34,6 +34,14 @@ export const userRouter = router({
       return result
     }),
   bulkRegister: publicProcedure
+    .meta({ description: `
+      @require 需要用户具有 teacher 或 admin 的身份
+      @params  z.object({
+        users: z.object({ username: z.string().min(1), studentId: z.string().length(11) }).array().nonempty(),
+        options: bulkRegisterOptions.optional(),
+      }
+      @return 无返回值
+    ` })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
       users: z.object({ username: z.string().min(1), studentId: z.string().length(11) }).array().nonempty(),
