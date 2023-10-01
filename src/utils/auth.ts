@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid'
 import bcrypt from 'bcrypt'
 import { and, eq } from 'drizzle-orm'
 import { type CreateExpressContextOptions } from '@trpc/server/adapters/express'
+import type { TNewUser } from '../db/db'
 import { db } from '../db/db'
 import { refreshTokens, users } from '../db/schema/user'
 import { env } from '../env'
@@ -72,15 +73,28 @@ export class Auth {
   }
 
   async register(newUser: {
-    id?: string
+    id: string
     username: string
     password: string
     role: 'student' | 'admin' | 'teacher'
   }) {
     const { id, username, password, role = 'student' } = newUser
     const hash = await bcrypt.hash(password, 8)
-    const user = id ? { id, username, password: hash, role } : { username, password: hash, role }
-    return db.insert(users).values(user)
+    const user = { id, username, password: hash, role }
+    await db.insert(users).values(user)
+  }
+
+  async bulkRegister(inputUsers: { id: string; username: string }[], randomPassword?: boolean) {
+    const newUsers = await Promise.all(inputUsers.map(async ({ username, id }) => {
+      const password = randomPassword ? await bcrypt.hash(nanoid(12), 8) : await bcrypt.hash(id, 8)
+      return {
+        id,
+        role: 'student',
+        password,
+        username,
+      } as TNewUser
+    }))
+    await db.insert(users).values(newUsers)
   }
 
   async login(id: string, password: string) {
@@ -89,7 +103,7 @@ export class Auth {
       return
     const accessToken = await this.produceAccessToken(user.id)
     const refreshToken = await this.produceRefreshToken(user.id)
-    return { userId: user.id, accessToken, refreshToken }
+    return { userId: user.id, username: user.username, accessToken, refreshToken }
   }
 
   async refreshAccessToken(refreshToken: string, id: string) {
