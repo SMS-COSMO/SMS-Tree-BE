@@ -15,9 +15,9 @@ const signPrivateKey = await jose.importPKCS8(env.SIGN_PRIVATE_KEY, 'RS512')
 
 // TODO: refactor Auth class
 export class Auth {
-  async produceAccessToken(username: string) {
+  async produceAccessToken(id: string) {
     const jwt = await new jose.SignJWT({})
-      .setSubject(username.toString())
+      .setSubject(id.toString())
       .setIssuedAt()
       .setExpirationTime('24h')
       .setIssuer('sms-tree')
@@ -43,9 +43,11 @@ export class Auth {
       const encPrivateKey = await jose.importPKCS8(env.ENC_PRIVATE_KEY, 'RSA-OAEP-256')
       const { plaintext: decryptedJwt } = await jose.compactDecrypt(token, encPrivateKey)
       const { payload } = await jose.jwtVerify(decode(decryptedJwt), signPublicKey)
-      return { user: payload.sub }
+      const userSelectResult = await db.select().from(users).where(eq(users.id, payload.sub as string))
+      return { user: userSelectResult[0] }
     }
     catch (err) {
+      console.log(err)
       if (err instanceof jose.errors.JWEDecryptionFailed)
         return { err: err.code }
       else if (err instanceof jose.errors.JWTExpired)
@@ -62,37 +64,43 @@ export class Auth {
 
   async getUserFromHeader(req: CreateExpressContextOptions['req']) {
     if (!req.headers.authorization)
-      return
+      return undefined
     const result = await this.getUserFromToken(req.headers.authorization)
     if (result.err)
-      return
+      return undefined
     return result.user
   }
 
-  async register(username: string, password: string, role: 'student' | 'admin' | 'teacher' = 'student') {
+  async register(newUser: {
+    id?: string
+    username: string
+    password: string
+    role: 'student' | 'admin' | 'teacher'
+  }) {
+    const { id, username, password, role = 'student' } = newUser
     const hash = await bcrypt.hash(password, 8)
-    const user = { username, password: hash, role }
+    const user = id ? { id, username, password: hash, role } : { username, password: hash, role }
     return db.insert(users).values(user)
   }
 
-  async login(username: string, password: string) {
-    const user = (await db.select().from(users).where(eq(users.username, username)))[0]
+  async login(id: string, password: string) {
+    const user = (await db.select().from(users).where(eq(users.id, id)))[0]
     if (!(user && (await bcrypt.compare(password, user.password))))
       return
-    const accessToken = await this.produceAccessToken(user.username)
-    const refreshToken = await this.produceRefreshToken(user.username)
-    return { username: user.username, accessToken, refreshToken }
+    const accessToken = await this.produceAccessToken(user.id)
+    const refreshToken = await this.produceRefreshToken(user.id)
+    return { userId: user.id, accessToken, refreshToken }
   }
 
-  async refreshAccessToken(refreshToken: string, username: string) {
+  async refreshAccessToken(refreshToken: string, id: string) {
     const token = await db
       .delete(refreshTokens)
-      .where(and(eq(refreshTokens.token, refreshToken), eq(refreshTokens.owner, username)))
+      .where(and(eq(refreshTokens.token, refreshToken), eq(refreshTokens.owner, id)))
       .returning()
     if (!token[0])
       return
-    const newRefreshToken = await this.produceRefreshToken(username)
-    const newAccessToken = await this.produceRefreshToken(username)
+    const newRefreshToken = await this.produceRefreshToken(id)
+    const newAccessToken = await this.produceAccessToken(id)
     return { accessToken: newAccessToken, refreshToken: newRefreshToken }
   }
 }
