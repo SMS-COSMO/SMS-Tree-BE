@@ -1,13 +1,19 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { publicProcedure, router } from '../trpc'
+import { nanoid } from 'nanoid'
+import { publicProcedure, requireRoles, router } from '../trpc'
+import type { TNewUser } from '../db/db'
+import { db } from '../db/db'
+import { users } from '../db/schema/user'
+
+const bulkRegisterOptions = z.object({ randomPassword: z.boolean() })
 
 export const userRouter = router({
   register: publicProcedure
     .meta({ description: '@return void\n只实现注册功能，注册完后需要登陆' })
     .input(z.object({ username: z.string().max(20), password: z.string().min(8) }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.auth.register(input.username, input.password)
+      await ctx.auth.register({ role: 'student', username: input.username, password: input.password })
     }),
   login: publicProcedure
     .meta({ description: '@return {username: string; accessToken: string; refreshToken: string;}' })
@@ -26,5 +32,21 @@ export const userRouter = router({
       if (!result)
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Incorrect refresh token.' })
       return result
+    }),
+  bulkRegister: publicProcedure
+    .use(requireRoles(['teacher', 'admin']))
+    .input(z.object({
+      users: z.object({ username: z.string().min(1), studentId: z.string().length(11) }).array().nonempty(),
+      options: bulkRegisterOptions.optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const usersArray = input.users.map(({ username, studentId }) => {
+        return {
+          role: 'student',
+          password: input.options?.randomPassword ? nanoid(12) : studentId,
+          username,
+        } as TNewUser
+      })
+      await db.insert(users).values(usersArray)
     }),
 })

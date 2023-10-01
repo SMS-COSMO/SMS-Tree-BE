@@ -1,7 +1,7 @@
 import process from 'node:process'
 import type * as trpcExpress from '@trpc/server/adapters/express'
 import type { inferAsyncReturnType } from '@trpc/server'
-import { db } from './db/db'
+import { type TUser, db } from './db/db'
 import { Auth } from './utils/auth'
 import { s3 } from './utils/s3'
 
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'production')
   newGlobal.auth = auth
 
 interface CreateContextOptions {
-  user?: string
+  user?: TUser
 }
 
 /**
