@@ -4,10 +4,11 @@ import { publicProcedure, requireRoles, router } from '../trpc'
 
 export const userRouter = router({
   register: publicProcedure
-    .meta({ description: '!!现在此功能仅供测试 会创建身份为 teacher 的账户!!' })
-    .input(z.object({ id: z.string().max(12), username: z.string().max(12), password: z.string().min(8) }))
+    .meta({ description: '@require 需要用户具有 teacher 或 admin 的身份' })
+    .use(requireRoles(['teacher', 'admin']))
+    .input(z.object({ id: z.string().max(12), role: z.enum(['student', 'teacher', 'admin']), username: z.string().max(12), password: z.string().min(8) }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.auth.register({ role: 'teacher', id: input.id, username: input.username, password: input.password })
+      await ctx.auth.register({ id: input.id, username: input.username, password: input.password, role: input.role })
     }),
   login: publicProcedure
     .meta({ description: '@return {userId: string; accessToken: string; refreshToken: string;}' })
