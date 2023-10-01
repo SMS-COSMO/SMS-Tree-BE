@@ -114,3 +114,6 @@ dist
 
 # drizzle migration folder
 drizzle/
+
+# local sqlite file
+local.sqlite
