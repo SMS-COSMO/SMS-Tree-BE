@@ -34,7 +34,7 @@ export const userRouter = router({
     ` })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
-      users: z.object({ id: z.string().length(11), username: z.string().min(1) }).array().nonempty(),
+      users: z.object({ id: z.string().length(24), username: z.string().min(1) }).array().nonempty(),
       randomPassword: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
