@@ -15,7 +15,7 @@ export const userRouter = router({
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.auth.login(input.id, input.password)
       if (!user)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Please check your credentials.' })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: '用户名或密码错误' })
       return user
     }),
   refreshAccessToken: publicProcedure

@@ -12,7 +12,7 @@ export const publicProcedure = t.procedure
 
 export const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.user)
-    throw new TRPCError({ code: 'UNAUTHORIZED' })
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: '用户未登录' })
 
   return next({ ctx: {
     user: ctx.user,
@@ -24,7 +24,7 @@ export function requireRoles(roles: string[]) {
   //  @see https://trpc.io/docs/server/middlewares#extending-middlewares
   return enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
     if (!roles.includes(ctx.user.role))
-      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Role not satisfied.' })
+      throw new TRPCError({ code: 'UNAUTHORIZED', message: '超出权限范围' })
     return next({ ctx: {
       user: ctx.user,
     } })

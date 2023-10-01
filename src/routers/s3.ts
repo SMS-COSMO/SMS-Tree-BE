@@ -35,7 +35,7 @@ export const s3Router = router({
       if (!uploadId) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Could not create multipart upload',
+          message: '创建上传任务失败',
         })
       }
 
