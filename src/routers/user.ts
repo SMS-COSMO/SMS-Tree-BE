@@ -18,6 +18,7 @@ export const userRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: result.message })
       else return result
     }),
+
   login: publicProcedure
     .meta({ description: '@return {userId: string; username: string; accessToken: string; refreshToken: string;}' })
     .input(z.object({ id: z.string(), password: z.string().min(1) }))
@@ -27,6 +28,7 @@ export const userRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: '用户名或密码错误' })
       return user
     }),
+
   refreshAccessToken: publicProcedure
     .meta({ description: '@return { accessToken: newAccessToken, refreshToken: newRefreshToken }' })
     .input(z.object({ username: z.string(), refreshToken: z.string() }))
@@ -36,6 +38,7 @@ export const userRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Incorrect refresh token.' })
       return result
     }),
+
   bulkRegister: publicProcedure
     .meta({ description: `
       @require 需要用户具有 teacher 或 admin 的身份
@@ -49,4 +52,10 @@ export const userRouter = router({
     .mutation(async ({ ctx, input }) => {
       await ctx.userController.bulkRegister(input.users, input.randomPassword)
     }),
+
+  profile: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return await ctx.userController.getProfile(input)
+    })
 })
