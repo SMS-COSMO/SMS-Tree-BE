@@ -7,9 +7,9 @@ export const userRouter = router({
     .meta({ description: '@require 需要用户具有 teacher 或 admin 的身份' })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
-      id: z.string().max(24, { message: '用户ID超出长度范围' }),
-      role: z.enum(['student', 'teacher', 'admin']),
-      username: z.string().max(15, { message: '用户名超出长度范围' }),
+      id: z.string().min(4, { message: '用户ID长度应至少为4' }).max(24, { message: '用户ID超出长度范围' }),
+      role: z.enum(['student', 'teacher', 'admin'], { errorMap: () => ({ message: '提交了不存在的用户身份' }) }),
+      username: z.string().min(2, { message: '用户名长度应至少为2' }).max(15, { message: '用户名超出长度范围' }),
       password: z.string().min(8, { message: '用户密码长度应至少为8' }),
     }))
     .mutation(async ({ ctx, input }) => {
