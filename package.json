@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "tsx watch ./src/server.ts",
-        "migrate": "drizzle-kit generate:pg && tsx ./scripts/migrate.ts",
+        "studio":"pnpm drizzle-kit studio",
         "start": "node --loader tsx ./src/server.ts",
         "lint": "eslint ./src",
         "lint:fix": "eslint ./src --fix"
