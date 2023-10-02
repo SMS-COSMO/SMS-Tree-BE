@@ -61,8 +61,8 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
       }
     `})
-    .input(z.string())
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.userController.getProfile(input)
+      return await ctx.userController.getProfile(input.id)
     })
 })
