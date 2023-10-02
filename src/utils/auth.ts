@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid'
 import bcrypt from 'bcrypt'
 import { and, eq } from 'drizzle-orm'
 import { type CreateExpressContextOptions } from '@trpc/server/adapters/express'
+import { LibsqlError } from '@libsql/client'
 import type { TNewUser } from '../db/db'
 import { db } from '../db/db'
 import { refreshTokens, users } from '../db/schema/user'
@@ -81,7 +82,15 @@ export class Auth {
     const { id, username, password, role = 'student' } = newUser
     const hash = await bcrypt.hash(password, 8)
     const user = { id, username, password: hash, role }
-    await db.insert(users).values(user)
+    try {
+      await db.insert(users).values(user)
+      return { success: true, message: '注册成功！' }
+    }
+    catch (err) {
+      if (err instanceof LibsqlError && err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
+        return { success: false, message: '用户ID出现重复' }
+      else return { success: false, message: '服务器内部错误' }
+    }
   }
 
   async bulkRegister(inputUsers: { id: string; username: string }[], randomPassword?: boolean) {
