@@ -22,6 +22,11 @@ pnpm i
 ```
 pnpm dev
 ```
+### 4. 查看数据库内容
+我们使用的 `drizzle orm` 贴心地准备了一个工具，可以用来查看和更改数据库内的数据，下面介绍使用教程。
+1. 在终端运行命令 `pnpm studio`
+2. 运行成功后会看到提示 `Drizzle Studio is up and running on http://0.0.0.0:4983` ，**请注意**，你需要在浏览器中打开`localhost:4983` 而**不是**`0.0.0.0:4983`。
+3. 如果运行后现实的端口号与这里写的不同，别担心，只需要替换成你的端口号即可。
 ## 可参考的资源
 
 -   drizzle-orm 文档： https://orm.drizzle.team/docs/quick-start
