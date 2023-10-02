@@ -1,10 +1,6 @@
 import * as jose from 'jose'
 import { nanoid } from 'nanoid'
-import bcrypt from 'bcrypt'
-import { and, eq } from 'drizzle-orm'
-import { type CreateExpressContextOptions } from '@trpc/server/adapters/express'
-import { LibsqlError } from '@libsql/client'
-import type { TNewUser } from '../db/db'
+import { eq } from 'drizzle-orm'
 import { db } from '../db/db'
 import { refreshTokens, users } from '../db/schema/user'
 import { env } from '../env'
@@ -62,68 +58,5 @@ export class Auth {
     const token = nanoid(128)
     await db.insert(refreshTokens).values({ token, owner })
     return token
-  }
-
-  async getUserFromHeader(req: CreateExpressContextOptions['req']) {
-    if (!req.headers.authorization)
-      return undefined
-    const result = await this.getUserFromToken(req.headers.authorization)
-    if (result.err)
-      return undefined
-    return result.user
-  }
-
-  async register(newUser: {
-    id: string
-    username: string
-    password: string
-    role: 'student' | 'admin' | 'teacher'
-  }) {
-    const { id, username, password, role = 'student' } = newUser
-    const hash = await bcrypt.hash(password, 8)
-    const user = { id, username, password: hash, role }
-    try {
-      await db.insert(users).values(user)
-      return { success: true, message: '注册成功！' }
-    }
-    catch (err) {
-      if (err instanceof LibsqlError && err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
-        return { success: false, message: '用户ID出现重复' }
-      else return { success: false, message: '服务器内部错误' }
-    }
-  }
-
-  async bulkRegister(inputUsers: { id: string; username: string }[], randomPassword?: boolean) {
-    const newUsers = await Promise.all(inputUsers.map(async ({ username, id }) => {
-      const password = randomPassword ? await bcrypt.hash(nanoid(12), 8) : await bcrypt.hash(id, 8)
-      return {
-        id,
-        role: 'student',
-        password,
-        username,
-      } as TNewUser
-    }))
-    await db.insert(users).values(newUsers)
-  }
-
-  async login(id: string, password: string) {
-    const user = (await db.select().from(users).where(eq(users.id, id)))[0]
-    if (!(user && (await bcrypt.compare(password, user.password))))
-      return
-    const accessToken = await this.produceAccessToken(user.id)
-    const refreshToken = await this.produceRefreshToken(user.id)
-    return { userId: user.id, username: user.username, accessToken, refreshToken }
-  }
-
-  async refreshAccessToken(refreshToken: string, id: string) {
-    const token = await db
-      .delete(refreshTokens)
-      .where(and(eq(refreshTokens.token, refreshToken), eq(refreshTokens.owner, id)))
-      .returning()
-    if (!token[0])
-      return
-    const newRefreshToken = await this.produceRefreshToken(id)
-    const newAccessToken = await this.produceAccessToken(id)
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken }
   }
 }

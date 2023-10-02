@@ -2,13 +2,13 @@ import process from 'node:process'
 import type * as trpcExpress from '@trpc/server/adapters/express'
 import type { inferAsyncReturnType } from '@trpc/server'
 import { type TUser, db } from './db/db'
-import { Auth } from './utils/auth'
-import { s3 } from './utils/s3'
+import { UserController } from './controllers/user'
+import { s3 } from './controllers/s3'
 
-const newGlobal = globalThis as unknown as { auth: Auth | undefined }
-const auth = newGlobal.auth ?? new Auth()
+const newGlobal = globalThis as unknown as { userController: UserController | undefined }
+const userController = newGlobal.userController ?? new UserController()
 if (process.env.NODE_ENV !== 'production')
-  newGlobal.auth = auth
+  newGlobal.userController = userController
 
 interface CreateContextOptions {
   user?: TUser
@@ -23,7 +23,7 @@ export function createInnerContext(opts: CreateContextOptions) {
   return {
     user: opts.user,
     db,
-    auth,
+    userController,
     s3,
   }
 }
@@ -35,7 +35,7 @@ export function createInnerContext(opts: CreateContextOptions) {
  */
 export async function createContext(opts: trpcExpress.CreateExpressContextOptions) {
   const { req } = opts
-  const user = await auth.getUserFromHeader(req)
+  const user = await userController.getUserFromHeader(req)
   return createInnerContext({ user })
 }
 
