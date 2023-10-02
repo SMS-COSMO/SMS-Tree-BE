@@ -77,4 +77,18 @@ export class UserController {
     const newAccessToken = await this.auth.produceAccessToken(id)
     return { accessToken: newAccessToken, refreshToken: newRefreshToken }
   }
+
+  async getProfile(id: string) {
+    try {
+      const user = (await db.select().from(users).where(eq(users.id, id)))[0]
+      return {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+      }
+    }
+    catch (err) {
+      return { success: false, message: '用户不存在' }
+    }
+  }
 }
