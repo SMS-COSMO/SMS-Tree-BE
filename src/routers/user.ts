@@ -54,6 +54,13 @@ export const userRouter = router({
     }),
 
   profile: publicProcedure
+    .meta({ description: `
+      @return {
+        id: string;
+        username: string;
+        role: "admin" | "student" | "teacher";
+      }
+    `})
     .input(z.string())
     .query(async ({ ctx, input }) => {
       return await ctx.userController.getProfile(input)
