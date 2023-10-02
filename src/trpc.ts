@@ -1,10 +1,28 @@
 import { TRPCError, initTRPC } from '@trpc/server'
 import superjson from 'superjson'
 import type { TRPCPanelMeta } from 'trpc-panel'
+import { ZodError } from 'zod'
 import type { Context } from './context'
 
-// created for each request
-const t = initTRPC.context<Context>().meta<TRPCPanelMeta>().create({ transformer: superjson })
+const t = initTRPC
+  .context<Context>()
+  .meta<TRPCPanelMeta>()
+  .create({
+    transformer: superjson,
+    errorFormatter(opts) {
+      const { shape, error } = opts
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          zodError:
+            error.code === 'BAD_REQUEST' && error.cause instanceof ZodError
+              ? error.cause.errors
+              : null,
+        },
+      }
+    },
+  })
 
 export const router = t.router
 export const middleware = t.middleware
