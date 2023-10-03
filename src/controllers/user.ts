@@ -7,6 +7,7 @@ import type { TNewUser } from '../db/db'
 import { db } from '../db/db'
 import { refreshTokens, users } from '../db/schema/user'
 import { Auth } from '../utils/auth'
+import { userSerializer } from '../serializer/user'
 
 export class UserController {
   private auth: Auth
@@ -81,14 +82,24 @@ export class UserController {
   async getProfile(id: string) {
     try {
       const user = (await db.select().from(users).where(eq(users.id, id)))[0]
-      return {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      }
+      return { success: true, res: userSerializer(user) }
     }
     catch (err) {
       return { success: false, message: '用户不存在' }
+    }
+  }
+
+  async getList() {
+    try {
+      let res: Array<unknown> = [];
+      (await db.select().from(users).all()).forEach(user => {
+        res.push(userSerializer(user))
+      })
+
+      return { success: true, res: res }
+    }
+    catch (err) {
+      return { success: false, message: '服务器内部错误' }
     }
   }
 }

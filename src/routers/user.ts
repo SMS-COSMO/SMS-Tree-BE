@@ -59,10 +59,34 @@ export const userRouter = router({
         id: string;
         username: string;
         role: "admin" | "student" | "teacher";
+        createdAt: Date;
       }
     `})
     .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .query(async ({ ctx, input }) => {
-      return await ctx.userController.getProfile(input.id)
+      const res = await ctx.userController.getProfile(input.id)
+      if (!res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res.res
+    }),
+
+  list: publicProcedure
+    .meta({ description: `
+      @require 需要用户具有 teacher 或 admin 的身份
+      @return [{
+        id: string;
+        username: string;
+        role: "admin" | "student" | "teacher";
+        createdAt: Date;
+      }, ...]
+    `})
+    .use(requireRoles(['teacher', 'admin']))
+    .query(async ({ ctx }) => {
+      const res = await ctx.userController.getList()
+      if (!res.success)
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message })
+      else
+        return res.res
     })
 })
