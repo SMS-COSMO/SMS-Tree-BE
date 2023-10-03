@@ -61,7 +61,7 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
       }
     `})
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .query(async ({ ctx, input }) => {
       return await ctx.userController.getProfile(input.id)
     })
