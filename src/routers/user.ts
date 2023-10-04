@@ -71,7 +71,7 @@ export const userRouter = router({
         return res.res
     }),
 
-  list: publicProcedure
+  studentList: publicProcedure
     .meta({ description: `
       @require 需要用户具有 teacher 或 admin 的身份
       @return [{
@@ -83,7 +83,7 @@ export const userRouter = router({
     `})
     .use(requireRoles(['teacher', 'admin']))
     .query(async ({ ctx }) => {
-      const res = await ctx.userController.getList()
+      const res = await ctx.userController.getStudentList()
       if (!res.success)
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message })
       else
