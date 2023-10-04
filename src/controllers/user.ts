@@ -92,9 +92,8 @@ export class UserController {
   async getStudentList() {
     try {
       let res: Array<unknown> = [];
-      (await db.select().from(users).all()).forEach(user => {
-        if (user.role === 'student')
-          res.push(userSerializer(user))
+      (await db.select().from(users).where(eq(users.role, 'student'))).forEach(user => {
+        res.push(userSerializer(user))
       })
 
       return { success: true, res: res }
