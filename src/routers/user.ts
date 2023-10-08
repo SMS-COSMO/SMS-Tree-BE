@@ -61,11 +61,11 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
         createdAt: Date;
       }
-    `})
+    ` })
     .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .query(async ({ ctx, input }) => {
       const res = await ctx.userController.getProfile(input.id)
-      if (!res.success)
+      if (!res.res || !res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else
         return res.res
@@ -80,13 +80,13 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
         createdAt: Date;
       }, ...]
-    `})
+    ` })
     .use(requireRoles(['teacher', 'admin']))
     .query(async ({ ctx }) => {
       const res = await ctx.userController.getStudentList()
-      if (!res.success)
+      if (!res.res || !res.success)
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message })
       else
         return res.res
-    })
+    }),
 })

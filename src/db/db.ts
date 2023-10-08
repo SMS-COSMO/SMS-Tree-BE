@@ -17,6 +17,6 @@ export const db = drizzle(client)
 export const selectUserSchema = createSelectSchema(users)
 export const insertUserSchema = createInsertSchema(users)
 
-export type TUser = typeof users.$inferSelect
+export type TRawUser = typeof users.$inferSelect
 export type TNewUser = typeof users.$inferInsert
 export type TRefreshToken = typeof refreshTokens.$inferInsert

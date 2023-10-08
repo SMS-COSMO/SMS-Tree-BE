@@ -3,11 +3,11 @@ import bcrypt from 'bcrypt'
 import { nanoid } from 'nanoid'
 import { and, eq } from 'drizzle-orm'
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express'
-import type { TNewUser } from '../db/db'
+import type { TNewUser, TRawUser } from '../db/db'
 import { db } from '../db/db'
 import { refreshTokens, users } from '../db/schema/user'
 import { Auth } from '../utils/auth'
-import { userSerializer } from '../serializer/user'
+import { type TUser, userSerializer } from '../serializer/user'
 
 export class UserController {
   private auth: Auth
@@ -91,12 +91,12 @@ export class UserController {
 
   async getStudentList() {
     try {
-      let res: Array<unknown> = [];
-      (await db.select().from(users).where(eq(users.role, 'student'))).forEach(user => {
+      const res: Array<TUser> = [];
+      (await db.select().from(users).where(eq(users.role, 'student'))).forEach((user) => {
         res.push(userSerializer(user))
       })
 
-      return { success: true, res: res }
+      return { success: true, res }
     }
     catch (err) {
       return { success: false, message: '服务器内部错误' }

@@ -1,7 +1,7 @@
 import process from 'node:process'
 import type * as trpcExpress from '@trpc/server/adapters/express'
 import type { inferAsyncReturnType } from '@trpc/server'
-import { type TUser, db } from './db/db'
+import { type TRawUser, db } from './db/db'
 import { UserController } from './controllers/user'
 import { s3 } from './controllers/s3'
 
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'production')
   newGlobal.userController = userController
 
 interface CreateContextOptions {
-  user?: TUser
+  user?: TRawUser
 }
 
 /**

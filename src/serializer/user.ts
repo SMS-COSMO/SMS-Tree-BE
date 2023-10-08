@@ -1,6 +1,8 @@
-import { TUser } from '../db/db'
+import type { TRawUser } from '../db/db'
 
-export const userSerializer = (user: TUser) => {
+export type TUser = ReturnType<typeof userSerializer>
+
+export function userSerializer(user: TRawUser) {
   return {
     id: user.id,
     username: user.username,
