@@ -20,7 +20,7 @@ export const userRouter = router({
     }),
 
   login: publicProcedure
-    .meta({ description: '@return {userId: string; username: string; accessToken: string; refreshToken: string;}' })
+    .meta({ description: '@return {userId: string; username: string; role: "admin" | "student" | "teacher"; accessToken: string; refreshToken: string;}' })
     .input(z.object({ id: z.string(), password: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.userController.login(input.id, input.password)
