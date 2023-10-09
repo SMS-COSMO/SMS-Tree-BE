@@ -50,7 +50,11 @@ export const userRouter = router({
       randomPassword: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.userController.bulkRegister(input.users, input.randomPassword)
+      const res = await ctx.userController.bulkRegister(input.users, input.randomPassword)
+      if (!res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res.message;
     }),
 
   profile: publicProcedure

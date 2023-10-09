@@ -46,7 +46,17 @@ export class UserController {
   }
 
   async bulkRegister(inputUsers: { id: string; username: string }[], randomPassword?: boolean) {
-    const newUsers = await Promise.all(inputUsers.map(async ({ username, id }) => {
+    if ((new Set(inputUsers.map(user => user.id))).size !== inputUsers.length) {
+      return { success: false, message: '用户ID出现重复' }
+    }
+
+    for (const user of inputUsers) {
+      if ((await db.select().from(users).where(eq(users.id, user.id))).length > 0) {
+        return { success: false, message: '用户ID出现重复' }
+      }
+    }
+
+    const newUsers = await Promise.all(inputUsers.map(async ({ id, username }) => {
       const password = randomPassword ? await bcrypt.hash(nanoid(12), 8) : await bcrypt.hash(id, 8)
       return {
         id,
@@ -56,6 +66,8 @@ export class UserController {
       } as TNewUser
     }))
     await db.insert(users).values(newUsers)
+
+    return { success: true, message: '创建成功！' }
   }
 
   async login(id: string, password: string) {
