@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "tsx watch ./src/server.ts",
-        "studio":"pnpm drizzle-kit studio",
+        "studio": "pnpm drizzle-kit studio",
         "start": "node --loader tsx ./src/server.ts",
         "lint": "eslint ./src",
         "lint:fix": "eslint ./src --fix"
@@ -19,6 +19,7 @@
         "@libsql/client": "^0.3.5",
         "@trpc/server": "^10.38.5",
         "bcrypt": "^5.1.1",
+        "better-sqlite3": "^8.7.0",
         "cors": "^2.8.5",
         "drizzle-orm": "^0.28.6",
         "drizzle-zod": "^0.5.1",

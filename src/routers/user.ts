@@ -54,7 +54,7 @@ export const userRouter = router({
       if (!res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else
-        return res.message;
+        return res.message
     }),
 
   profile: publicProcedure

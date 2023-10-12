@@ -4,11 +4,20 @@ import type { inferAsyncReturnType } from '@trpc/server'
 import { type TRawUser, db } from './db/db'
 import { UserController } from './controllers/user'
 import { s3 } from './controllers/s3'
+import { PaperController } from './controllers/paper'
 
-const newGlobal = globalThis as unknown as { userController: UserController | undefined }
+const newGlobal = globalThis as unknown as {
+  userController: UserController | undefined
+  paperController: PaperController | undefined
+}
+
 const userController = newGlobal.userController ?? new UserController()
-if (process.env.NODE_ENV !== 'production')
+const paperController = newGlobal.paperController ?? new PaperController()
+
+if (process.env.NODE_ENV !== 'production') {
   newGlobal.userController = userController
+  newGlobal.paperController = paperController
+}
 
 interface CreateContextOptions {
   user?: TRawUser
@@ -25,6 +34,7 @@ export function createInnerContext(opts: CreateContextOptions) {
     db,
     userController,
     s3,
+    paperController,
   }
 }
 
