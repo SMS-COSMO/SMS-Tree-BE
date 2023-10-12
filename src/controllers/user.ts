@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import { nanoid } from 'nanoid'
 import { and, eq } from 'drizzle-orm'
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express'
-import type { TNewUser, TRawUser } from '../db/db'
+import type { TNewUser } from '../db/db'
 import { db } from '../db/db'
 import { refreshTokens, users } from '../db/schema/user'
 import { Auth } from '../utils/auth'
@@ -46,14 +46,12 @@ export class UserController {
   }
 
   async bulkRegister(inputUsers: { id: string; username: string }[], randomPassword?: boolean) {
-    if ((new Set(inputUsers.map(user => user.id))).size !== inputUsers.length) {
+    if ((new Set(inputUsers.map(user => user.id))).size !== inputUsers.length)
       return { success: false, message: '用户ID出现重复' }
-    }
 
     for (const user of inputUsers) {
-      if ((await db.select().from(users).where(eq(users.id, user.id))).length > 0) {
+      if ((await db.select().from(users).where(eq(users.id, user.id))).length > 0)
         return { success: false, message: '用户ID出现重复' }
-      }
     }
 
     const newUsers = await Promise.all(inputUsers.map(async ({ id, username }) => {
