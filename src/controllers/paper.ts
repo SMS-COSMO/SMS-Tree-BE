@@ -2,19 +2,18 @@ import { eq } from "drizzle-orm";
 import { db } from "../db/db";
 import { papers } from "../db/schema/paper";
 import { LibsqlError } from "@libsql/client";
-import { TRPCError } from "@trpc/server";
 
 export class PaperController {
   async create(newPaper: {
-    id: string;
     title: string;
     keywords: string;
     abstract: string;
     authorGroupId: string;
     S3FileId: string;
   }) {
-    const { id, title, keywords, abstract, authorGroupId, S3FileId } = newPaper
-    const paper = { id, title, keywords, abstract, authorGroupId, S3FileId }
+    const { title, keywords, abstract, authorGroupId, S3FileId } = newPaper
+    const paper = { title, keywords, abstract, authorGroupId, S3FileId }
+
     try {
       await db.insert(papers).values(paper)
       return { success: true, message: '创建成功' }
@@ -29,6 +28,15 @@ export class PaperController {
     try {
       const paper = await db.select().from(papers).where(eq(papers.id, id))
       return { success: true, res: paper, message: "查询成功" }
+    } catch (err) {
+      return { success: false, message: "论文不存在" }
+    }
+  }
+
+  async getList() {
+    try {
+      const paperList = await db.select().from(papers)
+      return { success: true, res: paperList, message: "查询成功" }
     } catch (err) {
       return { success: false, message: "论文不存在" }
     }

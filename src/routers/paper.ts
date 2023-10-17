@@ -5,7 +5,6 @@ import { TRPCError } from '@trpc/server'
 export const paperRouter = router({
   create: publicProcedure
     .input(z.object({
-      id: z.string(),
       title: z.string(),
       keywords: z.string(),
       abstract: z.string(),
@@ -28,5 +27,14 @@ export const paperRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else
         return res.res[0]
-    })
+    }),
+
+  list: publicProcedure
+    .query(async ({ ctx }) => {
+      const res = await ctx.paperController.getList()
+      if (!res.res ||!res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res.res
+    }),
 })
