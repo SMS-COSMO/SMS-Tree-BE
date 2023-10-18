@@ -4,6 +4,7 @@ import { createClient } from '@libsql/client'
 import { env } from '../env'
 import type { refreshTokens } from './schema/user'
 import { users } from './schema/user'
+import { papers } from './schema/paper'
 
 const options = (() => {
   switch (env.DATABASE_CONNECTION_TYPE) {
@@ -20,3 +21,5 @@ export const insertUserSchema = createInsertSchema(users)
 export type TRawUser = typeof users.$inferSelect
 export type TNewUser = typeof users.$inferInsert
 export type TRefreshToken = typeof refreshTokens.$inferInsert
+
+export type TRawPaper = typeof papers.$inferSelect

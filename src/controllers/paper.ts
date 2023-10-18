@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../db/db";
 import { papers } from "../db/schema/paper";
 import { LibsqlError } from "@libsql/client";
+import { TPaper, paperFileSerializer, paperSerializer } from "../serializer/paper";
 
 export class PaperController {
   async create(newPaper: {
@@ -26,7 +27,16 @@ export class PaperController {
   
   async getContent(id: string) {
     try {
-      const paper = await db.select().from(papers).where(eq(papers.id, id))
+      const paper = paperSerializer((await db.select().from(papers).where(eq(papers.id, id)))[0])
+      return { success: true, res: paper, message: "查询成功" }
+    } catch (err) {
+      return { success: false, message: "论文不存在" }
+    }
+  }
+
+  async getFile(id: string) {
+    try {
+      const paper = paperFileSerializer((await db.select().from(papers).where(eq(papers.id, id)))[0])
       return { success: true, res: paper, message: "查询成功" }
     } catch (err) {
       return { success: false, message: "论文不存在" }
@@ -35,8 +45,12 @@ export class PaperController {
 
   async getList() {
     try {
-      const paperList = await db.select().from(papers)
-      return { success: true, res: paperList, message: "查询成功" }
+      const res: Array<TPaper> = [];
+      (await db.select().from(papers)).forEach((paper) => {
+        res.push(paperSerializer(paper))
+      })
+
+      return { success: true, res, message: "查询成功" }
     } catch (err) {
       return { success: false, message: "论文不存在" }
     }
