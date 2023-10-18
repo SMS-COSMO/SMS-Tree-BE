@@ -26,13 +26,23 @@ export const paperRouter = router({
       if (!res.res || !res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else
-        return res.res[0]
+        return res.res
     }),
 
   list: publicProcedure
     .query(async ({ ctx }) => {
       const res = await ctx.paperController.getList()
       if (!res.res ||!res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res.res
+    }),
+
+  file: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const res = await ctx.paperController.getFile(input.id)
+      if (!res.res || !res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else
         return res.res
