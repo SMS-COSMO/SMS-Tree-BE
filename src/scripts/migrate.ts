@@ -1,11 +1,16 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import { migrate } from 'drizzle-orm/postgres-js/migrator'
-import postgres from 'postgres'
+import { drizzle } from 'drizzle-orm/libsql'
+import { migrate } from 'drizzle-orm/libsql/migrator'
+import { createClient } from '@libsql/client'
 import { env } from '../env'
 
-// for migrations
-console.log(env.DATABASE_URL)
-const migrationClient = postgres(env.DATABASE_URL, { max: 1 })
-await migrate(drizzle(migrationClient), { migrationsFolder: 'drizzle' })
+const options = (() => {
+  switch (env.DATABASE_CONNECTION_TYPE) {
+    case 'local': return { url: 'file:local.sqlite' }
+    case 'remote': return { url: env.DATABASE_URL, authToken: env.DATABASE_AUTH_TOKEN }
+  }
+})()
+
+const client = createClient(options)
+await migrate(drizzle(client), { migrationsFolder: 'drizzle' })
 console.log('Migration completed!')
-migrationClient.end()
+client.close()
