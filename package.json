@@ -1,50 +1,50 @@
 {
-    "name": "sms-tree-be",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "dev": "tsx watch ./src/server.ts",
-        "studio": "pnpm drizzle-kit studio",
-        "start": "node --loader tsx ./src/server.ts",
-        "lint": "eslint ./src",
-        "lint:fix": "eslint ./src --fix"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "@aws-sdk/client-s3": "^3.421.0",
-        "@aws-sdk/s3-request-presigner": "^3.421.0",
-        "@libsql/client": "^0.3.5",
-        "@trpc/server": "^10.38.5",
-        "bcrypt": "^5.1.1",
-        "better-sqlite3": "^8.7.0",
-        "cors": "^2.8.5",
-        "drizzle-orm": "^0.28.6",
-        "drizzle-zod": "^0.5.1",
-        "express": "^4.18.2",
-        "jose": "^4.14.6",
-        "nanoid": "^5.0.1",
-        "superjson": "^1.13.3",
-        "trpc-panel": "^1.3.4",
-        "tsx": "^3.13.0",
-        "zod": "^3.22.2"
-    },
-    "devDependencies": {
-        "@antfu/eslint-config": "1.0.0-beta.17",
-        "@trpc/client": "^10.38.5",
-        "@types/bcrypt": "^5.0.0",
-        "@types/cors": "^2.8.14",
-        "@types/express": "^4.17.18",
-        "@types/node": "^20.8.0",
-        "dotenv": "^16.3.1",
-        "drizzle-kit": "^0.19.13",
-        "eslint": "^8.50.0"
-    },
-    "type": "module",
-    "packageManager": "pnpm@8.6.0",
-    "engines": {
-        "node": "18.x"
-    }
+  "name": "sms-tree-be",
+  "type": "module",
+  "version": "1.0.0",
+  "packageManager": "pnpm@8.6.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "main": "index.js",
+  "engines": {
+    "node": "18.x"
+  },
+  "scripts": {
+    "dev": "tsx watch ./src/server.ts",
+    "studio": "pnpm drizzle-kit studio",
+    "start": "node --loader tsx ./src/server.ts",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.421.0",
+    "@aws-sdk/s3-request-presigner": "^3.421.0",
+    "@libsql/client": "^0.3.5",
+    "@trpc/server": "^10.38.5",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^8.7.0",
+    "cors": "^2.8.5",
+    "drizzle-orm": "^0.28.6",
+    "drizzle-zod": "^0.5.1",
+    "express": "^4.18.2",
+    "jose": "^4.14.6",
+    "nanoid": "^5.0.1",
+    "superjson": "^1.13.3",
+    "trpc-panel": "^1.3.4",
+    "tsx": "^3.13.0",
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "1.0.0-beta.17",
+    "@trpc/client": "^10.38.5",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.18",
+    "@types/node": "^20.8.0",
+    "dotenv": "^16.3.1",
+    "drizzle-kit": "^0.19.13",
+    "eslint": "^8.50.0"
+  }
 }

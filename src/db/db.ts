@@ -4,7 +4,7 @@ import { createClient } from '@libsql/client'
 import { env } from '../env'
 import type { refreshTokens } from './schema/user'
 import { users } from './schema/user'
-import { papers } from './schema/paper'
+import type { papers } from './schema/paper'
 
 const options = (() => {
   switch (env.DATABASE_CONNECTION_TYPE) {

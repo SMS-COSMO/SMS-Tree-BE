@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { publicProcedure, requireRoles, router } from '../trpc'
 import { TRPCError } from '@trpc/server'
+import { publicProcedure, router } from '../trpc'
 
 export const paperRouter = router({
   create: publicProcedure
@@ -9,7 +9,7 @@ export const paperRouter = router({
       keywords: z.string(),
       abstract: z.string(),
       authorGroupId: z.string(),
-      S3FileId: z.string()
+      S3FileId: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
       const res = await ctx.paperController.create(input)
@@ -32,7 +32,7 @@ export const paperRouter = router({
   list: publicProcedure
     .query(async ({ ctx }) => {
       const res = await ctx.paperController.getList()
-      if (!res.res ||!res.success)
+      if (!res.res || !res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else
         return res.res

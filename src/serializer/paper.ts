@@ -1,4 +1,4 @@
-import type { TRawPaper } from "../db/db"
+import type { TRawPaper } from '../db/db'
 
 export type TPaper = ReturnType<typeof paperSerializer>
 

@@ -1,16 +1,17 @@
-import { eq } from "drizzle-orm";
-import { db } from "../db/db";
-import { papers } from "../db/schema/paper";
-import { LibsqlError } from "@libsql/client";
-import { TPaper, paperFileSerializer, paperSerializer } from "../serializer/paper";
+import { eq } from 'drizzle-orm'
+import { LibsqlError } from '@libsql/client'
+import { db } from '../db/db'
+import { papers } from '../db/schema/paper'
+import type { TPaper } from '../serializer/paper'
+import { paperFileSerializer, paperSerializer } from '../serializer/paper'
 
 export class PaperController {
   async create(newPaper: {
-    title: string;
-    keywords: string;
-    abstract: string;
-    authorGroupId: string;
-    S3FileId: string;
+    title: string
+    keywords: string
+    abstract: string
+    authorGroupId: string
+    S3FileId: string
   }) {
     const { title, keywords, abstract, authorGroupId, S3FileId } = newPaper
     const paper = { title, keywords, abstract, authorGroupId, S3FileId }
@@ -18,28 +19,31 @@ export class PaperController {
     try {
       await db.insert(papers).values(paper)
       return { success: true, message: '创建成功' }
-    } catch (err) {
+    }
+    catch (err) {
       if (err instanceof LibsqlError && (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY' || err.code === 'PROXY_ERROR'))
         return { success: false, message: '论文ID出现重复' }
       else return { success: false, message: '服务器内部错误' }
     }
   }
-  
+
   async getContent(id: string) {
     try {
       const paper = paperSerializer((await db.select().from(papers).where(eq(papers.id, id)))[0])
-      return { success: true, res: paper, message: "查询成功" }
-    } catch (err) {
-      return { success: false, message: "论文不存在" }
+      return { success: true, res: paper, message: '查询成功' }
+    }
+    catch (err) {
+      return { success: false, message: '论文不存在' }
     }
   }
 
   async getFile(id: string) {
     try {
       const paper = paperFileSerializer((await db.select().from(papers).where(eq(papers.id, id)))[0])
-      return { success: true, res: paper, message: "查询成功" }
-    } catch (err) {
-      return { success: false, message: "论文不存在" }
+      return { success: true, res: paper, message: '查询成功' }
+    }
+    catch (err) {
+      return { success: false, message: '论文不存在' }
     }
   }
 
@@ -50,9 +54,10 @@ export class PaperController {
         res.push(paperSerializer(paper))
       })
 
-      return { success: true, res, message: "查询成功" }
-    } catch (err) {
-      return { success: false, message: "论文不存在" }
+      return { success: true, res, message: '查询成功' }
+    }
+    catch (err) {
+      return { success: false, message: '论文不存在' }
     }
   }
 }
