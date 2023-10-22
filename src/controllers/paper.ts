@@ -39,8 +39,10 @@ export class PaperController {
 
   async getFile(id: string) {
     try {
-      const paper = paperFileSerializer((await db.select().from(papers).where(eq(papers.id, id)))[0])
-      return { success: true, res: paper, message: '查询成功' }
+      const paper = (await db.select().from(papers).where(eq(papers.id, id)))[0]
+      const file = paperFileSerializer(paper)
+      await db.update(papers).set({ downloadCount: paper.downloadCount + 1 }).where(eq(papers.id, id))
+      return { success: true, res: file, message: '查询成功' }
     }
     catch (err) {
       return { success: false, message: '论文不存在' }
