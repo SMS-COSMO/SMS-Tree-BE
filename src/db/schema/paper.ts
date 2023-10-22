@@ -9,6 +9,7 @@ export const papers = sqliteTable('papers', {
   authorGroupId: text('author_group_id', { mode: 'text' }).notNull(),
   status: integer('status').notNull().default(0),
   rate: integer('rate').notNull().default(0),
+  downloadCount: integer('download_count').notNull().default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   S3FileId: text('s3_file_id', { mode: 'text' }).notNull(),
 })
