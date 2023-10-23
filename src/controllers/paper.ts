@@ -1,5 +1,4 @@
 import { eq } from 'drizzle-orm'
-import { LibsqlError } from '@libsql/client'
 import { db } from '../db/db'
 import { papers } from '../db/schema/paper'
 import type { TPaper } from '../serializer/paper'
@@ -8,7 +7,7 @@ import { paperFileSerializer, paperSerializer } from '../serializer/paper'
 export class PaperController {
   async create(newPaper: {
     title: string
-    keywords: string
+    keywords: string[]
     abstract: string
     authorGroupId: string
     S3FileId: string
@@ -21,9 +20,7 @@ export class PaperController {
       return { success: true, message: '创建成功' }
     }
     catch (err) {
-      if (err instanceof LibsqlError && (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY' || err.code === 'PROXY_ERROR'))
-        return { success: false, message: '论文ID出现重复' }
-      else return { success: false, message: '服务器内部错误' }
+      return { success: false, message: '服务器内部错误' }
     }
   }
 

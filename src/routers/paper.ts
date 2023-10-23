@@ -6,7 +6,7 @@ export const paperRouter = router({
   create: publicProcedure
     .input(z.object({
       title: z.string(),
-      keywords: z.string(),
+      keywords: z.array(z.string()),
       abstract: z.string(),
       authorGroupId: z.string(),
       S3FileId: z.string(),

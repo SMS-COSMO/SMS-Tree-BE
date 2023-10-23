@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid'
 export const papers = sqliteTable('papers', {
   id: text('id', { mode: 'text' }).primaryKey().$defaultFn(() => nanoid(12)),
   title: text('title', { mode: 'text' }).notNull(),
-  keywords: text('keywords', { mode: 'text' }).notNull(),
+  keywords: text('keywords', { mode: 'json' }).notNull().$type<string[]>(),
   abstract: text('abstract', { mode: 'text' }).notNull(),
   authorGroupId: text('author_group_id', { mode: 'text' }).notNull(),
   status: integer('status').notNull().default(0),
