@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
-import { publicProcedure, router } from '../trpc'
+import { protectedProcedure, router } from '../trpc'
 
 export const paperRouter = router({
-  create: publicProcedure
+  create: protectedProcedure
     .input(z.object({
       title: z.string().min(1, { message: '请输入论文标题' }).max(256, { message: '论文标题长度不应超过 256' }),
       keywords: z.string().array(),
@@ -19,7 +19,7 @@ export const paperRouter = router({
         return res.message
     }),
 
-  content: publicProcedure
+  content: protectedProcedure
     .input(z.object({ id: z.string().nonempty('论文id不存在') }))
     .query(async ({ ctx, input }) => {
       const res = await ctx.paperController.getContent(input.id)
@@ -29,7 +29,7 @@ export const paperRouter = router({
         return res.res
     }),
 
-  list: publicProcedure
+  list: protectedProcedure
     .query(async ({ ctx }) => {
       const res = await ctx.paperController.getList()
       if (!res.res || !res.success)
@@ -38,7 +38,7 @@ export const paperRouter = router({
         return res.res
     }),
 
-  file: publicProcedure
+  file: protectedProcedure
     .input(z.object({ id: z.string().nonempty('论文id不存在') }))
     .query(async ({ ctx, input }) => {
       const res = await ctx.paperController.getFile(input.id)
