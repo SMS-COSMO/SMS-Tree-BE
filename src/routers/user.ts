@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { publicProcedure, requireRoles, router } from '../trpc'
+import { protectedProcedure, publicProcedure, requireRoles, router } from '../trpc'
 
 export const userRouter = router({
-  register: publicProcedure
+  register: protectedProcedure
     .meta({ description: '@require 需要用户具有 teacher 或 admin 的身份' })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
@@ -39,7 +39,7 @@ export const userRouter = router({
       return result
     }),
 
-  bulkRegister: publicProcedure
+  bulkRegister: protectedProcedure
     .meta({ description: `
       @require 需要用户具有 teacher 或 admin 的身份
       @return 无返回值
@@ -57,7 +57,7 @@ export const userRouter = router({
         return res.message
     }),
 
-  profile: publicProcedure
+  profile: protectedProcedure
     .meta({ description: `
       @return {
         id: string;
@@ -75,7 +75,7 @@ export const userRouter = router({
         return res.res
     }),
 
-  studentList: publicProcedure
+  studentList: protectedProcedure
     .meta({ description: `
       @require 需要用户具有 teacher 或 admin 的身份
       @return [{

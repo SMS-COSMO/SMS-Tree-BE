@@ -26,7 +26,6 @@ const t = initTRPC
 
 export const router = t.router
 export const middleware = t.middleware
-export const publicProcedure = t.procedure
 
 export const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.user)
@@ -48,3 +47,6 @@ export function requireRoles(roles: string[]) {
     } })
   })
 }
+
+export const publicProcedure = t.procedure
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed)
