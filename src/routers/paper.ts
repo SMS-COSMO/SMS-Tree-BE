@@ -6,7 +6,7 @@ export const paperRouter = router({
   create: protectedProcedure
     .input(z.object({
       title: z.string().min(1, { message: '请输入论文标题' }).max(256, { message: '论文标题长度不应超过 256' }),
-      keywords: z.string().array(),
+      keywords: z.array(z.string().max(20, { message: '关键词最长为20个字符' })).max(20, { message: '最多100个关键词' }),
       abstract: z.string(),
       authorGroupId: z.string().nonempty('无效作者组'),
       S3FileId: z.string().nonempty('请上传文件'),
