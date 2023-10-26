@@ -11,6 +11,7 @@ export function paperSerializer(paper: TRawPaper) {
     authorGroupId: paper.authorGroupId,
     status: paper.status,
     downloadCount: paper.downloadCount,
+    isFeatured: paper.isFeatured,
     rate: paper.rate,
     createdAt: paper.createdAt,
   }
