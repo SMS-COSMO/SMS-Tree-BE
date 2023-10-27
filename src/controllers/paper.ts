@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { db } from '../db/db'
+import { TRawUser, db } from '../db/db'
 import { papers } from '../db/schema/paper'
 import type { TPaper } from '../serializer/paper'
 import { paperFileSerializer, paperSerializer } from '../serializer/paper'
@@ -10,10 +10,11 @@ export class PaperController {
     keywords: string[]
     abstract: string
     authorGroupId: string
+    canDownload: boolean
     S3FileId: string
   }) {
-    const { title, keywords, abstract, authorGroupId, S3FileId } = newPaper
-    const paper = { title, keywords, abstract, authorGroupId, S3FileId }
+    const { title, keywords, abstract, authorGroupId, canDownload, S3FileId } = newPaper
+    const paper = { title, keywords, abstract, authorGroupId, canDownload, S3FileId }
 
     try {
       await db.insert(papers).values(paper)
@@ -34,9 +35,11 @@ export class PaperController {
     }
   }
 
-  async getFile(id: string) {
+  async getFile(id: string, role: TRawUser['role']) {
     try {
       const paper = (await db.select().from(papers).where(eq(papers.id, id)))[0]
+      if (!paper.canDownload && role === 'student')
+        return { success: false, message: '无下载权限' }
       const file = paperFileSerializer(paper)
       await db.update(papers).set({ downloadCount: paper.downloadCount + 1 }).where(eq(papers.id, id))
       return { success: true, res: file, message: '查询成功' }

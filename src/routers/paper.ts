@@ -9,6 +9,7 @@ export const paperRouter = router({
       keywords: z.array(z.string().max(8, { message: '关键词最长为8个字符' })).max(8, { message: '最多8个关键词' }),
       abstract: z.string(),
       authorGroupId: z.string().nonempty('无效作者组'),
+      canDownload: z.boolean(),
       S3FileId: z.string().nonempty('请上传文件'),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -41,7 +42,7 @@ export const paperRouter = router({
   file: protectedProcedure
     .input(z.object({ id: z.string().nonempty('论文id不存在') }))
     .query(async ({ ctx, input }) => {
-      const res = await ctx.paperController.getFile(input.id)
+      const res = await ctx.paperController.getFile(input.id, ctx.user.role)
       if (!res.res || !res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else
