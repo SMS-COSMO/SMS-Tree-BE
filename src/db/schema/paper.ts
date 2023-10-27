@@ -11,6 +11,7 @@ export const papers = sqliteTable('papers', {
   rate: integer('rate').notNull().default(0),
   downloadCount: integer('download_count').notNull().default(0),
   isFeatured: integer('is_featured', { mode: 'boolean' }).notNull().default(false),
+  canDownload: integer('can_download', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   S3FileId: text('s3_file_id', { mode: 'text' }).notNull(),
 })

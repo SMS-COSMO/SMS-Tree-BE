@@ -12,6 +12,7 @@ export function paperSerializer(paper: TRawPaper) {
     status: paper.status,
     downloadCount: paper.downloadCount,
     isFeatured: paper.isFeatured,
+    canDownload: paper.canDownload,
     rate: paper.rate,
     createdAt: paper.createdAt,
   }
