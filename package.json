@@ -17,7 +17,8 @@
     "start": "node --loader tsx ./src/server.ts",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "migrate": "pnpm drizzle-kit generate:sqlite && tsx ./src/scripts/migrate.ts"
+    "migrate": "pnpm drizzle-kit generate:sqlite && tsx ./src/scripts/migrate.ts",
+    "push": "pnpm drizzle-kit push:sqlite"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.433.0",
