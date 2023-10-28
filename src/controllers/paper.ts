@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { TRawUser, db } from '../db/db'
+import { type TRawUser, db } from '../db/db'
 import { papers } from '../db/schema/paper'
 import type { TPaper } from '../serializer/paper'
 import { paperFileSerializer, paperSerializer } from '../serializer/paper'
