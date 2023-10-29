@@ -18,7 +18,7 @@ export const userRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
       else return res
     }),
-  
+
   remove: protectedProcedure
     .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .use(requireRoles(['teacher', 'admin']))
