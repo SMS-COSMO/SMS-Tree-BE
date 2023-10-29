@@ -13,10 +13,21 @@ export const userRouter = router({
       password: z.string().min(8, { message: '用户密码长度应至少为8' }),
     }))
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.userController.register({ id: input.id, username: input.username, password: input.password, role: input.role })
-      if (!result.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: result.message })
-      else return result
+      const res = await ctx.userController.register({ id: input.id, username: input.username, password: input.password, role: input.role })
+      if (!res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else return res
+    }),
+  
+  remove: protectedProcedure
+    .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
+    .use(requireRoles(['teacher', 'admin']))
+    .mutation(async ({ ctx, input }) => {
+      const res = await ctx.userController.remove(input.id)
+      if (!res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res
     }),
 
   login: publicProcedure
@@ -33,10 +44,10 @@ export const userRouter = router({
     .meta({ description: '@return { accessToken: newAccessToken, refreshToken: newRefreshToken }' })
     .input(z.object({ username: z.string(), refreshToken: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.userController.refreshAccessToken(input.refreshToken, input.username)
-      if (!result)
+      const res = await ctx.userController.refreshAccessToken(input.refreshToken, input.username)
+      if (!res)
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Incorrect refresh token.' })
-      return result
+      return res
     }),
 
   bulkRegister: protectedProcedure

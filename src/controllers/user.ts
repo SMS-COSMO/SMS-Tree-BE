@@ -112,4 +112,14 @@ export class UserController {
       return { success: false, message: '服务器内部错误' }
     }
   }
+
+  async remove(id: string) {
+    try {
+      await db.delete(users).where(eq(users.id, id))
+      return { success: true, message: '删除成功' }
+    }
+    catch (err) {
+      return { success: false, message: '用户不存在' }
+    }
+  }
 }
