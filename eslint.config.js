@@ -4,6 +4,6 @@ import antfu from '@antfu/eslint-config'
 export default antfu({}, {
   rules: {
     'no-console': 'off',
-    'linebreak-style': ['warn', 'windows'],
+    'linebreak-style': 'off',
   },
 })
