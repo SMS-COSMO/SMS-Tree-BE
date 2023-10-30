@@ -25,6 +25,16 @@ export class PaperController {
     }
   }
 
+  async remove(id: string) {
+    try {
+      await db.delete(papers).where(eq(papers.id, id))
+      return { success: true, message: '删除成功' }
+    }
+    catch (err) {
+      return { success: false, message: '论文不存在' }
+    }
+  }
+
   async getContent(id: string) {
     try {
       const paper = paperSerializer((await db.select().from(papers).where(eq(papers.id, id)))[0])
