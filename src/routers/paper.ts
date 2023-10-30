@@ -8,9 +8,9 @@ export const paperRouter = router({
       title: z.string().min(1, { message: '请输入论文标题' }).max(256, { message: '论文标题长度不应超过 256' }),
       keywords: z.array(z.string().max(8, { message: '关键词最长为8个字符' })).max(8, { message: '最多8个关键词' }),
       abstract: z.string(),
-      authorGroupId: z.string().nonempty('无效作者组'),
+      authorGroupId: z.string().min(1, '无效作者组'),
       canDownload: z.boolean(),
-      S3FileId: z.string().nonempty('请上传文件'),
+      S3FileId: z.string().min(1, '请上传文件'),
     }))
     .mutation(async ({ ctx, input }) => {
       const res = await ctx.paperController.create(input)
@@ -21,7 +21,7 @@ export const paperRouter = router({
     }),
 
   content: protectedProcedure
-    .input(z.object({ id: z.string().nonempty('论文id不存在') }))
+    .input(z.object({ id: z.string().min(1, '论文id不存在') }))
     .query(async ({ ctx, input }) => {
       const res = await ctx.paperController.getContent(input.id)
       if (!res.res || !res.success)
@@ -40,7 +40,7 @@ export const paperRouter = router({
     }),
 
   file: protectedProcedure
-    .input(z.object({ id: z.string().nonempty('论文id不存在') }))
+    .input(z.object({ id: z.string().min(1, '论文id不存在') }))
     .query(async ({ ctx, input }) => {
       const res = await ctx.paperController.getFile(input.id, ctx.user.role)
       if (!res.res || !res.success)
