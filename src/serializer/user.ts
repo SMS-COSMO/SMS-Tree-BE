@@ -8,5 +8,6 @@ export function userSerializer(user: TRawUser) {
     username: user.username,
     role: user.role,
     createdAt: user.createdAt,
+    groupIds: user.groupIds,
   }
 }
