@@ -21,11 +21,11 @@ export const userRouter = router({
         .min(8, { message: '用户密码长度应至少为8' }),
       groupIds: z
         .array(z.string())
-        .optional()
+        .optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       // check if all groups exist
-      for (let group of input.groupIds ?? []) {
+      for (const group of input.groupIds ?? []) {
         const res = await ctx.groupController.groupExist(group)
         if (!res.success)
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message })
@@ -38,13 +38,13 @@ export const userRouter = router({
         username: input.username,
         password: input.password,
         role: input.role,
-        groupIds: input.groupIds
+        groupIds: input.groupIds,
       })
       if (!res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
 
       // add user to groups
-      for (let group of input.groupIds ?? []) {
+      for (const group of input.groupIds ?? []) {
         const r = await ctx.groupController.addUserToGroup(group, input.id)
         if (!r.success)
           throw new TRPCError({ code: 'BAD_REQUEST', message: r.message })
@@ -89,7 +89,8 @@ export const userRouter = router({
       description: `
       @require 需要用户具有 teacher 或 admin 的身份
       @return 无返回值
-    ` })
+    `,
+    })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
       users: z.object({ id: z.string().min(1).max(24), username: z.string().min(1) }).array().nonempty(),
@@ -112,7 +113,8 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
         createdAt: Date;
       }
-    ` })
+    `,
+    })
     .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .query(async ({ ctx, input }) => {
       const res = await ctx.userController.getProfile(input.id)
@@ -132,7 +134,8 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
         createdAt: Date;
       }, ...]
-    ` })
+    `,
+    })
     .use(requireRoles(['teacher', 'admin']))
     .query(async ({ ctx }) => {
       const res = await ctx.userController.getStudentList()

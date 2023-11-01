@@ -12,7 +12,7 @@ export const groupRouter = router({
         .array(z
           .string()
           .min(4, { message: '用户ID长度应至少为4' })
-          .max(24, { message: '用户ID超出长度范围' })
+          .max(24, { message: '用户ID超出长度范围' }),
         )
         .min(1, '请填写组员ID')
         .max(64, '组员最多64人')
@@ -25,7 +25,7 @@ export const groupRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       // check if all members exist
-      for (let user of input.members ?? []) {
+      for (const user of input.members ?? []) {
         const res = await ctx.userController.userExist(user)
         if (!res.success)
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message })
@@ -38,7 +38,7 @@ export const groupRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
 
       // add group to users
-      for (let user of input.members ?? []) {
+      for (const user of input.members ?? []) {
         const r = await ctx.userController.addGroupToUser(user, res.id)
         if (!r.success)
           throw new TRPCError({ code: 'BAD_REQUEST', message: r.message })

@@ -1,7 +1,8 @@
 import { eq } from 'drizzle-orm'
 import { db } from '../db/db'
 import { groups } from '../db/schema/group'
-import { TGroup, groupSerializer } from '../serializer/group'
+import type { TGroup } from '../serializer/group'
+import { groupSerializer } from '../serializer/group'
 
 export class GroupController {
   async create(newGroup: {
@@ -71,7 +72,7 @@ export class GroupController {
       if (selectedGroups.length === 0)
         return { success: false, message: '小组不存在' }
 
-      let newMembers: string[] = selectedGroups[0].members ?? []
+      const newMembers: string[] = selectedGroups[0].members ?? []
       newMembers.push(userId)
       await db.update(groups).set({ members: newMembers }).where(eq(groups.id, groupId))
       return { success: true, message: '添加成功' }

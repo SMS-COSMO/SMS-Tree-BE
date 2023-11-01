@@ -5,7 +5,7 @@ import { env } from '../env'
 import type { refreshTokens } from './schema/user'
 import { users } from './schema/user'
 import type { papers } from './schema/paper'
-import { groups } from './schema/group'
+import type { groups } from './schema/group'
 
 const options = (() => {
   switch (env.DATABASE_CONNECTION_TYPE) {

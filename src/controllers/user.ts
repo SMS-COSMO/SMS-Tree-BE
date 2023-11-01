@@ -134,7 +134,7 @@ export class UserController {
       if (selectedUsers.length === 0)
         return { success: false, message: '用户不存在' }
 
-      let newGroupIds: string[] = selectedUsers[0].groupIds ?? []
+      const newGroupIds: string[] = selectedUsers[0].groupIds ?? []
       newGroupIds.push(groupId)
       await db.update(users).set({ groupIds: newGroupIds }).where(eq(users.id, userId))
       return { success: true, message: '添加成功' }
