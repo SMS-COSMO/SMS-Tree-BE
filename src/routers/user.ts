@@ -7,16 +7,50 @@ export const userRouter = router({
     .meta({ description: '@require 需要用户具有 teacher 或 admin 的身份' })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
-      id: z.string().min(4, { message: '用户ID长度应至少为4' }).max(24, { message: '用户ID超出长度范围' }),
+      id: z
+        .string()
+        .min(4, { message: '用户ID长度应至少为4' })
+        .max(24, { message: '用户ID超出长度范围' }),
       role: z.enum(['student', 'teacher', 'admin'], { errorMap: () => ({ message: '提交了不存在的用户身份' }) }),
-      username: z.string().min(2, { message: '用户名长度应至少为2' }).max(15, { message: '用户名超出长度范围' }),
-      password: z.string().min(8, { message: '用户密码长度应至少为8' }),
+      username: z
+        .string()
+        .min(2, { message: '用户名长度应至少为2' })
+        .max(15, { message: '用户名超出长度范围' }),
+      password: z
+        .string()
+        .min(8, { message: '用户密码长度应至少为8' }),
+      groupIds: z
+        .array(z.string())
+        .optional()
     }))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.userController.register({ id: input.id, username: input.username, password: input.password, role: input.role })
+      // check if all groups exist
+      for (let group of input.groupIds ?? []) {
+        const res = await ctx.groupController.groupExist(group)
+        if (!res.success)
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message })
+        else if (!res.res)
+          throw new TRPCError({ code: 'BAD_REQUEST', message: `小组${group}不存在` })
+      }
+
+      const res = await ctx.userController.register({
+        id: input.id,
+        username: input.username,
+        password: input.password,
+        role: input.role,
+        groupIds: input.groupIds
+      })
       if (!res.success)
         throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
-      else return res
+
+      // add user to groups
+      for (let group of input.groupIds ?? []) {
+        const r = await ctx.groupController.addUserToGroup(group, input.id)
+        if (!r.success)
+          throw new TRPCError({ code: 'BAD_REQUEST', message: r.message })
+      }
+
+      return res
     }),
 
   remove: protectedProcedure
@@ -51,7 +85,8 @@ export const userRouter = router({
     }),
 
   bulkRegister: protectedProcedure
-    .meta({ description: `
+    .meta({
+      description: `
       @require 需要用户具有 teacher 或 admin 的身份
       @return 无返回值
     ` })
@@ -69,7 +104,8 @@ export const userRouter = router({
     }),
 
   profile: protectedProcedure
-    .meta({ description: `
+    .meta({
+      description: `
       @return {
         id: string;
         username: string;
@@ -87,7 +123,8 @@ export const userRouter = router({
     }),
 
   studentList: protectedProcedure
-    .meta({ description: `
+    .meta({
+      description: `
       @require 需要用户具有 teacher 或 admin 的身份
       @return [{
         id: string;

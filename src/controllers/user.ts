@@ -30,10 +30,11 @@ export class UserController {
     username: string
     password: string
     role: 'student' | 'admin' | 'teacher'
+    groupIds?: string[]
   }) {
-    const { id, username, password, role = 'student' } = newUser
+    const { id, username, password, role = 'student', groupIds } = newUser
     const hash = await bcrypt.hash(password, 8)
-    const user = { id, username, password: hash, role }
+    const user = { id, username, password: hash, role, groupIds: groupIds ?? [] }
     try {
       await db.insert(users).values(user)
       return { success: true, message: '注册成功！' }
@@ -120,6 +121,36 @@ export class UserController {
     }
     catch (err) {
       return { success: false, message: '用户不存在' }
+    }
+  }
+
+  async addGroupToUser(userId: string, groupId: string) {
+    try {
+      const selectedUsers = (
+        await db
+          .select({ groupIds: users.groupIds })
+          .from(users).where(eq(users.id, userId))
+      )
+      if (selectedUsers.length === 0)
+        return { success: false, message: '用户不存在' }
+
+      let newGroupIds: string[] = selectedUsers[0].groupIds ?? []
+      newGroupIds.push(groupId)
+      await db.update(users).set({ groupIds: newGroupIds }).where(eq(users.id, userId))
+      return { success: true, message: '添加成功' }
+    }
+    catch (err) {
+      console.log(err)
+      return { success: false, message: '服务器内部错误' }
+    }
+  }
+
+  async userExist(id: string) {
+    try {
+      return { success: true, res: (await db.select().from(users).where(eq(users.id, id))).length > 0 }
+    }
+    catch (err) {
+      return { success: false, message: '服务器内部错误' }
     }
   }
 }
