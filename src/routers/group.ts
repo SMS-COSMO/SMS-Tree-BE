@@ -46,4 +46,23 @@ export const groupRouter = router({
 
       return res.message
     }),
+
+  content: protectedProcedure
+    .input(z.object({ id: z.string().min(1, '小组id不存在') }))
+    .query(async ({ ctx, input }) => {
+      const res = await ctx.groupController.getContent(input.id)
+      if (!res.res || !res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res.res
+    }),
+
+  list: protectedProcedure
+    .query(async ({ ctx }) => {
+      const res = await ctx.groupController.getList()
+      if (!res.res || !res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res.res
+    }),
 })

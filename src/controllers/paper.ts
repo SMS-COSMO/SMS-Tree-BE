@@ -69,7 +69,7 @@ export class PaperController {
       return { success: true, res, message: '查询成功' }
     }
     catch (err) {
-      return { success: false, message: '论文不存在' }
+      return { success: false, message: '服务器内部错误' }
     }
   }
 }

@@ -5,6 +5,7 @@ import { env } from '../env'
 import type { refreshTokens } from './schema/user'
 import { users } from './schema/user'
 import type { papers } from './schema/paper'
+import { groups } from './schema/group'
 
 const options = (() => {
   switch (env.DATABASE_CONNECTION_TYPE) {
@@ -23,3 +24,5 @@ export type TNewUser = typeof users.$inferInsert
 export type TRefreshToken = typeof refreshTokens.$inferInsert
 
 export type TRawPaper = typeof papers.$inferSelect
+
+export type TRawGroup = typeof groups.$inferSelect
