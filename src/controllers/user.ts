@@ -140,7 +140,6 @@ export class UserController {
       return { success: true, message: '添加成功' }
     }
     catch (err) {
-      console.log(err)
       return { success: false, message: '服务器内部错误' }
     }
   }

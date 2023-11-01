@@ -27,6 +27,16 @@ export class GroupController {
     }
   }
 
+  async remove(id: string) {
+    try {
+      await db.delete(groups).where(eq(groups.id, id))
+      return { success: true, message: '删除成功' }
+    }
+    catch (err) {
+      return { success: false, message: '小组不存在' }
+    }
+  }
+
   async getContent(id: string) {
     try {
       const group = groupSerializer((await db.select().from(groups).where(eq(groups.id, id)))[0])
@@ -67,7 +77,6 @@ export class GroupController {
       return { success: true, message: '添加成功' }
     }
     catch (err) {
-      console.log(err)
       return { success: false, message: '服务器内部错误' }
     }
   }

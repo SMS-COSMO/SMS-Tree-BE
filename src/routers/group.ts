@@ -65,4 +65,15 @@ export const groupRouter = router({
       else
         return res.res
     }),
+
+  remove: protectedProcedure
+    .input(z.object({ id: z.string().min(1, '小组id不存在') }))
+    .use(requireRoles(['admin', 'teacher']))
+    .mutation(async ({ ctx, input }) => {
+      const res = await ctx.groupController.remove(input.id)
+      if (!res.success)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+      else
+        return res
+    }),
 })

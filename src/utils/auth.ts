@@ -45,7 +45,6 @@ export class Auth {
       return { user: userSelectResult[0] }
     }
     catch (err) {
-      console.log(err)
       if (err instanceof jose.errors.JWEDecryptionFailed)
         return { err: err.code }
       else if (err instanceof jose.errors.JWTExpired)
