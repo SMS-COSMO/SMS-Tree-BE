@@ -32,13 +32,14 @@ export class UserController {
     const user = { id, username, password: hash, role }
     try {
       const insertedId = (await db.insert(users).values(user).returning({ id: users.id }))[0].id
-      if (groupIds?.length)
+      if (groupIds?.length) {
         await db.insert(usersToGroups).values(
           groupIds.map(item => ({
             userId: insertedId,
             groupId: item,
-          }))
+          })),
         )
+      }
       return { success: true, message: '注册成功！' }
     }
     catch (err) {
@@ -110,7 +111,7 @@ export class UserController {
   async getStudentList() {
     try {
       const res: Array<TUser> = [];
-      (await db.select().from(users).where(eq(users.role, 'student'))).forEach(async content => {
+      (await db.select().from(users).where(eq(users.role, 'student'))).forEach(async (content) => {
         const groupIds = (
           await db.select().from(usersToGroups)
             .where(eq(usersToGroups.userId, content.id))

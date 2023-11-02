@@ -12,7 +12,7 @@ export class GroupController {
     papers?: string[]
     archived?: boolean
   }) {
-    const { leader, members, papers, archived } = newGroup
+    const { leader, members, archived } = newGroup
     const group = {
       leader,
       archived: archived ?? false,
@@ -20,11 +20,12 @@ export class GroupController {
 
     try {
       const insertedId = (await db.insert(groups).values(group).returning({ id: groups.id }))[0].id
-      if (members?.length)
+      if (members?.length) {
         await db.insert(usersToGroups).values(members.map(item => ({
           groupId: insertedId,
-          userId: item
+          userId: item,
         })))
+      }
       return { success: true, message: '创建成功' }
     }
     catch (err) {
@@ -61,7 +62,7 @@ export class GroupController {
   async getList() {
     try {
       const res: Array<TGroup> = [];
-      (await db.select().from(groups)).forEach(async content => {
+      (await db.select().from(groups)).forEach(async (content) => {
         const groupMembers = (
           await db.select().from(usersToGroups)
             .where(eq(usersToGroups.groupId, content.id))

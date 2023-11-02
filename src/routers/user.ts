@@ -62,7 +62,8 @@ export const userRouter = router({
       description: `
       @require 需要用户具有 teacher 或 admin 的身份
       @return 无返回值
-    ` })
+    `,
+    })
     .use(requireRoles(['teacher', 'admin']))
     .input(z.object({
       users: z.object({ id: z.string().min(1).max(24), username: z.string().min(1) }).array().nonempty(),
@@ -85,7 +86,8 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
         createdAt: Date;
       }
-    ` })
+    `,
+    })
     .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .query(async ({ ctx, input }) => {
       const res = await ctx.userController.getProfile(input.id)
@@ -105,7 +107,8 @@ export const userRouter = router({
         role: "admin" | "student" | "teacher";
         createdAt: Date;
       }, ...]
-    ` })
+    `,
+    })
     .use(requireRoles(['teacher', 'admin']))
     .query(async ({ ctx }) => {
       const res = await ctx.userController.getStudentList()
