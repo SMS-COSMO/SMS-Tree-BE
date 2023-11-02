@@ -110,7 +110,7 @@ export class UserController {
 
   async getStudentList() {
     try {
-      const res: Array<TUser> = [];
+      const res: Array<TUser> = []
       for (const content of await db.select().from(users).where(eq(users.role, 'student'))) {
         const groupIds = (
           await db.select().from(usersToGroups)

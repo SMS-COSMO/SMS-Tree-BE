@@ -1,5 +1,7 @@
 import { eq } from 'drizzle-orm'
-import { type TRawUser, db, TNewPaper } from '../db/db'
+import { db } from '../db/db'
+import type { TNewPaper, type TRawUser } from '../db/db'
+
 import { papers } from '../db/schema/paper'
 import type { TPaper } from '../serializer/paper'
 import { paperFileSerializer, paperSerializer } from '../serializer/paper'
@@ -64,7 +66,7 @@ export class PaperController {
 
   async getList() {
     try {
-      const res: Array<TPaper> = [];
+      const res: Array<TPaper> = []
       for (const paper of await db.select().from(papers)) {
         const groupId = (
           await db.select().from(papersToGroups).where(eq(papersToGroups.paperId, paper.id))
