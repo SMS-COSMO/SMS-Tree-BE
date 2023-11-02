@@ -8,6 +8,7 @@ import { db } from '../db/db'
 import { refreshTokens, users } from '../db/schema/user'
 import { Auth } from '../utils/auth'
 import { type TUser, userSerializer } from '../serializer/user'
+import { usersToGroups } from '../db/schema/userToGroup'
 
 export class UserController {
   private auth: Auth
@@ -25,17 +26,19 @@ export class UserController {
     return result.user
   }
 
-  async register(newUser: {
-    id: string
-    username: string
-    password: string
-    role: 'student' | 'admin' | 'teacher'
-  }) {
-    const { id, username, password, role = 'student' } = newUser
+  async register(newUser: TNewUser & { groupIds?: string[] }) {
+    const { id, username, password, role = 'student', groupIds } = newUser
     const hash = await bcrypt.hash(password, 8)
     const user = { id, username, password: hash, role }
     try {
-      await db.insert(users).values(user)
+      const insertedId = (await db.insert(users).values(user).returning({ id: users.id }))[0].id
+      if (groupIds?.length)
+        await db.insert(usersToGroups).values(
+          groupIds.map(item => ({
+            userId: insertedId,
+            groupId: item,
+          }))
+        )
       return { success: true, message: '注册成功！' }
     }
     catch (err) {
@@ -61,7 +64,8 @@ export class UserController {
         role: 'student',
         password,
         username,
-      } as TNewUser
+        groupIds: [],
+      } as TNewUser & { groupIds: string[] }
     }))
     await db.insert(users).values(newUsers)
 
@@ -91,8 +95,12 @@ export class UserController {
 
   async getProfile(id: string) {
     try {
-      const user = (await db.select().from(users).where(eq(users.id, id)))[0]
-      return { success: true, res: userSerializer(user) }
+      const content = (await db.select().from(users).where(eq(users.id, id)))[0]
+      const groupIds = (
+        await db.select().from(usersToGroups)
+          .where(eq(usersToGroups.userId, content.id))
+      ).map(item => item.groupId)
+      return { success: true, res: userSerializer(content, groupIds) }
     }
     catch (err) {
       return { success: false, message: '用户不存在' }
@@ -102,8 +110,12 @@ export class UserController {
   async getStudentList() {
     try {
       const res: Array<TUser> = [];
-      (await db.select().from(users).where(eq(users.role, 'student'))).forEach((user) => {
-        res.push(userSerializer(user))
+      (await db.select().from(users).where(eq(users.role, 'student'))).forEach(async content => {
+        const groupIds = (
+          await db.select().from(usersToGroups)
+            .where(eq(usersToGroups.userId, content.id))
+        ).map(item => item.groupId)
+        res.push(userSerializer(content, groupIds))
       })
 
       return { success: true, res }
@@ -116,6 +128,7 @@ export class UserController {
   async remove(id: string) {
     try {
       await db.delete(users).where(eq(users.id, id))
+      await db.delete(usersToGroups).where(eq(usersToGroups.userId, id))
       return { success: true, message: '删除成功' }
     }
     catch (err) {
