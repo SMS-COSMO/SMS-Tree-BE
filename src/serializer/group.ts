@@ -7,7 +7,7 @@ export function groupSerializer(content: TRawGroup, members: string[]) {
     id: content.id,
     archived: content.archived,
     leader: content.leader,
-    members: members,
+    members,
     createdAt: content.createdAt,
   }
 }
