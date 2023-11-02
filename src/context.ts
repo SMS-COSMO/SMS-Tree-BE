@@ -5,18 +5,22 @@ import { type TRawUser, db } from './db/db'
 import { UserController } from './controllers/user'
 import { s3 } from './controllers/s3'
 import { PaperController } from './controllers/paper'
+import { GroupController } from './controllers/group'
 
 const newGlobal = globalThis as unknown as {
   userController: UserController | undefined
   paperController: PaperController | undefined
+  groupController: GroupController | undefined
 }
 
 const userController = newGlobal.userController ?? new UserController()
 const paperController = newGlobal.paperController ?? new PaperController()
+const groupController = newGlobal.groupController ?? new GroupController()
 
 if (process.env.NODE_ENV !== 'production') {
   newGlobal.userController = userController
   newGlobal.paperController = paperController
+  newGlobal.groupController = groupController
 }
 
 interface CreateContextOptions {
@@ -35,6 +39,7 @@ export function createInnerContext(opts: CreateContextOptions) {
     userController,
     s3,
     paperController,
+    groupController,
   }
 }
 
