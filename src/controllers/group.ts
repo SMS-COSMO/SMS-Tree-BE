@@ -76,7 +76,7 @@ export class GroupController {
 
   async getList() {
     try {
-      const res: Array<TGroup> = [];
+      const res: Array<TGroup> = []
       for (const info of await db.select().from(groups)) {
         const members = (
           await db.select().from(usersToGroups)
