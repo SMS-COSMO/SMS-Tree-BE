@@ -13,7 +13,7 @@ export const paperRouter = router({
         .array(z.string().max(8, { message: '关键词最长为8个字符' }))
         .max(8, { message: '最多8个关键词' }),
       abstract: z.string(),
-      authorGroupId: z.string().min(1, '无效作者组'),
+      groupId: z.string().optional(),
       canDownload: z.boolean(),
       S3FileId: z.string().min(1, '请上传文件'),
     }))

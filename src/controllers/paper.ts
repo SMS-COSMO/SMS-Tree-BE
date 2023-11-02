@@ -1,23 +1,19 @@
 import { eq } from 'drizzle-orm'
-import { type TRawUser, db } from '../db/db'
+import { type TRawUser, db, TNewPaper } from '../db/db'
 import { papers } from '../db/schema/paper'
 import type { TPaper } from '../serializer/paper'
 import { paperFileSerializer, paperSerializer } from '../serializer/paper'
+import { papersToGroups } from '../db/schema/paperToGroup'
 
 export class PaperController {
-  async create(newPaper: {
-    title: string
-    keywords: string[]
-    abstract: string
-    authorGroupId: string
-    canDownload: boolean
-    S3FileId: string
-  }) {
-    const { title, keywords, abstract, authorGroupId, canDownload, S3FileId } = newPaper
-    const paper = { title, keywords, abstract, authorGroupId, canDownload, S3FileId }
+  async create(newPaper: TNewPaper & { groupId?: string }) {
+    const { title, keywords, abstract, canDownload, S3FileId, groupId } = newPaper
+    const paper = { title, keywords, abstract, canDownload, S3FileId }
 
     try {
-      await db.insert(papers).values(paper)
+      const insertedId = (await db.insert(papers).values(paper).returning({ id: papers.id }))[0].id
+      if (groupId)
+        await db.insert(papersToGroups).values({ groupId, paperId: insertedId })
       return { success: true, message: '创建成功' }
     }
     catch (err) {
@@ -27,6 +23,7 @@ export class PaperController {
 
   async remove(id: string) {
     try {
+      await db.delete(papersToGroups).where(eq(papersToGroups.paperId, id))
       await db.delete(papers).where(eq(papers.id, id))
       return { success: true, message: '删除成功' }
     }
@@ -37,7 +34,12 @@ export class PaperController {
 
   async getContent(id: string) {
     try {
-      const paper = paperSerializer((await db.select().from(papers).where(eq(papers.id, id)))[0])
+      const info = (await db.select().from(papers).where(eq(papers.id, id)))[0]
+      const groupId = (
+        await db.select().from(papersToGroups).where(eq(papersToGroups.paperId, id))
+      )[0].groupId
+
+      const paper = paperSerializer(info, groupId)
       return { success: true, res: paper, message: '查询成功' }
     }
     catch (err) {
@@ -50,6 +52,7 @@ export class PaperController {
       const paper = (await db.select().from(papers).where(eq(papers.id, id)))[0]
       if (!paper.canDownload && role === 'student')
         return { success: false, message: '无下载权限' }
+
       const file = paperFileSerializer(paper)
       await db.update(papers).set({ downloadCount: paper.downloadCount + 1 }).where(eq(papers.id, id))
       return { success: true, res: file, message: '查询成功' }
@@ -62,9 +65,12 @@ export class PaperController {
   async getList() {
     try {
       const res: Array<TPaper> = [];
-      (await db.select().from(papers)).forEach((paper) => {
-        res.push(paperSerializer(paper))
-      })
+      for (const paper of await db.select().from(papers)) {
+        const groupId = (
+          await db.select().from(papersToGroups).where(eq(papersToGroups.paperId, paper.id))
+        )[0].groupId
+        res.push(paperSerializer(paper, groupId))
+      }
 
       return { success: true, res, message: '查询成功' }
     }

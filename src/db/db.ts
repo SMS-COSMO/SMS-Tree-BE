@@ -24,5 +24,6 @@ export type TNewUser = typeof users.$inferInsert
 export type TRefreshToken = typeof refreshTokens.$inferInsert
 
 export type TRawPaper = typeof papers.$inferSelect
+export type TNewPaper = typeof papers.$inferInsert
 
 export type TRawGroup = typeof groups.$inferSelect

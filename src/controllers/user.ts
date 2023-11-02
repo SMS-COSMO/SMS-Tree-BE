@@ -111,13 +111,13 @@ export class UserController {
   async getStudentList() {
     try {
       const res: Array<TUser> = [];
-      (await db.select().from(users).where(eq(users.role, 'student'))).forEach(async (content) => {
+      for (const content of await db.select().from(users).where(eq(users.role, 'student'))) {
         const groupIds = (
           await db.select().from(usersToGroups)
             .where(eq(usersToGroups.userId, content.id))
         ).map(item => item.groupId)
         res.push(userSerializer(content, groupIds))
-      })
+      }
 
       return { success: true, res }
     }
