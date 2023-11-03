@@ -9,7 +9,7 @@ import { papersToGroups } from '../db/schema/paperToGroup';
 export class GroupController {
   async create(newGroup: {
     leader: string
-    members?: string[]
+    members: string[]
     papers?: string[]
     archived?: boolean
   }) {
@@ -27,12 +27,10 @@ export class GroupController {
     }
 
     try {
-      if (members?.length) {
-        await db.insert(usersToGroups).values(members.map(item => ({
-          groupId: insertedId,
-          userId: item,
-        })));
-      }
+      await db.insert(usersToGroups).values(members.map(item => ({
+        groupId: insertedId,
+        userId: item,
+      })));
     } catch (err) {
       return { success: false, message: '用户不存在' };
     }

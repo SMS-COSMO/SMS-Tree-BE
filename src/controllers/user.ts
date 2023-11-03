@@ -27,7 +27,7 @@ export class UserController {
   }
 
   async register(newUser: TNewUser & { groupIds?: string[] }) {
-    const { id, username, password, role = 'student', groupIds } = newUser;
+    const { id, username, password, role, groupIds } = newUser;
     const hash = await bcrypt.hash(password, 8);
     const user = { id, username, password: hash, role };
     try {

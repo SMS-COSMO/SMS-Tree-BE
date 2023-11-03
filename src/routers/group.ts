@@ -15,8 +15,7 @@ export const groupRouter = router({
           .max(24, { message: '用户ID超出长度范围' }),
         )
         .min(1, '请填写组员ID')
-        .max(64, '组员最多64人')
-        .optional(),
+        .max(64, '组员最多64人'),
       papers: z
         .array(z.string())
         .max(8, '小组最多8篇论文')
