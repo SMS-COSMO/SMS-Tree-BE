@@ -1,5 +1,5 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
-import { nanoid } from 'nanoid'
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { nanoid } from 'nanoid';
 
 export const papers = sqliteTable('papers', {
   id: text('id', { mode: 'text' }).primaryKey().$defaultFn(() => nanoid(12)),
@@ -13,4 +13,4 @@ export const papers = sqliteTable('papers', {
   canDownload: integer('can_download', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   S3FileId: text('s3_file_id', { mode: 'text' }).notNull(),
-})
+});

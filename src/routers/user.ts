@@ -1,6 +1,6 @@
-import { TRPCError } from '@trpc/server'
-import { z } from 'zod'
-import { protectedProcedure, publicProcedure, requireRoles, router } from '../trpc'
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { protectedProcedure, publicProcedure, requireRoles, router } from '../trpc';
 
 export const userRouter = router({
   register: protectedProcedure
@@ -20,41 +20,41 @@ export const userRouter = router({
         password: input.password,
         role: input.role,
         groupIds: input.groupIds,
-      })
+      });
       if (!res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
-      else return res
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
+      else return res;
     }),
 
   remove: protectedProcedure
     .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .use(requireRoles(['teacher', 'admin']))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.userController.remove(input.id)
+      const res = await ctx.userController.remove(input.id);
       if (!res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res
+        return res;
     }),
 
   login: publicProcedure
     .meta({ description: '@return {userId: string; username: string; role: "admin" | "student" | "teacher"; accessToken: string; refreshToken: string;}' })
     .input(z.object({ id: z.string(), password: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.userController.login(input.id, input.password)
+      const user = await ctx.userController.login(input.id, input.password);
       if (!user)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: '用户名或密码错误' })
-      return user
+        throw new TRPCError({ code: 'BAD_REQUEST', message: '用户名或密码错误' });
+      return user;
     }),
 
   refreshAccessToken: publicProcedure
     .meta({ description: '@return { accessToken: newAccessToken, refreshToken: newRefreshToken }' })
     .input(z.object({ username: z.string(), refreshToken: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.userController.refreshAccessToken(input.refreshToken, input.username)
+      const res = await ctx.userController.refreshAccessToken(input.refreshToken, input.username);
       if (!res)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Incorrect refresh token.' })
-      return res
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Incorrect refresh token.' });
+      return res;
     }),
 
   bulkRegister: protectedProcedure
@@ -70,11 +70,11 @@ export const userRouter = router({
       randomPassword: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.userController.bulkRegister(input.users, input.randomPassword)
+      const res = await ctx.userController.bulkRegister(input.users, input.randomPassword);
       if (!res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.message
+        return res.message;
     }),
 
   profile: protectedProcedure
@@ -90,11 +90,11 @@ export const userRouter = router({
     })
     .input(z.object({ id: z.string().min(1, { message: '用户不存在' }) }))
     .query(async ({ ctx, input }) => {
-      const res = await ctx.userController.getProfile(input.id)
+      const res = await ctx.userController.getProfile(input.id);
       if (!res.res || !res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.res
+        return res.res;
     }),
 
   studentList: protectedProcedure
@@ -111,10 +111,10 @@ export const userRouter = router({
     })
     .use(requireRoles(['teacher', 'admin']))
     .query(async ({ ctx }) => {
-      const res = await ctx.userController.getStudentList()
+      const res = await ctx.userController.getStudentList();
       if (!res.res || !res.success)
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message })
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: res.message });
       else
-        return res.res
+        return res.res;
     }),
-})
+});

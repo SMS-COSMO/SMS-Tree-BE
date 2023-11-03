@@ -1,6 +1,6 @@
-import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
-import { protectedProcedure, requireRoles, router } from '../trpc'
+import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
+import { protectedProcedure, requireRoles, router } from '../trpc';
 
 export const paperRouter = router({
   create: protectedProcedure
@@ -18,50 +18,50 @@ export const paperRouter = router({
       S3FileId: z.string().min(1, '请上传文件'),
     }))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.paperController.create(input)
+      const res = await ctx.paperController.create(input);
       if (!res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.message
+        return res.message;
     }),
 
   content: protectedProcedure
     .input(z.object({ id: z.string().min(1, '论文id不存在') }))
     .query(async ({ ctx, input }) => {
-      const res = await ctx.paperController.getContent(input.id)
+      const res = await ctx.paperController.getContent(input.id);
       if (!res.res || !res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.res
+        return res.res;
     }),
 
   remove: protectedProcedure
     .input(z.object({ id: z.string().min(1, '论文id不存在') }))
     .use(requireRoles(['admin', 'teacher']))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.paperController.remove(input.id)
+      const res = await ctx.paperController.remove(input.id);
       if (!res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res
+        return res;
     }),
 
   list: protectedProcedure
     .query(async ({ ctx }) => {
-      const res = await ctx.paperController.getList()
+      const res = await ctx.paperController.getList();
       if (!res.res || !res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.res
+        return res.res;
     }),
 
   file: protectedProcedure
     .input(z.object({ id: z.string().min(1, '论文id不存在') }))
     .query(async ({ ctx, input }) => {
-      const res = await ctx.paperController.getFile(input.id, ctx.user.role)
+      const res = await ctx.paperController.getFile(input.id, ctx.user.role);
       if (!res.res || !res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.res
+        return res.res;
     }),
-})
+});

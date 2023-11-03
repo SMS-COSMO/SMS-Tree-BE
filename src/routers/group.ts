@@ -1,6 +1,6 @@
-import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
-import { protectedProcedure, requireRoles, router } from '../trpc'
+import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
+import { protectedProcedure, requireRoles, router } from '../trpc';
 
 export const groupRouter = router({
   create: protectedProcedure
@@ -24,40 +24,40 @@ export const groupRouter = router({
       archived: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.groupController.create(input)
+      const res = await ctx.groupController.create(input);
       if (!res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res
+        return res;
     }),
 
   content: protectedProcedure
     .input(z.object({ id: z.string().min(1, '小组id不存在') }))
     .query(async ({ ctx, input }) => {
-      const res = await ctx.groupController.getContent(input.id)
+      const res = await ctx.groupController.getContent(input.id);
       if (!res.res || !res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.res
+        return res.res;
     }),
 
   list: protectedProcedure
     .query(async ({ ctx }) => {
-      const res = await ctx.groupController.getList()
+      const res = await ctx.groupController.getList();
       if (!res.res || !res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res.res
+        return res.res;
     }),
 
   remove: protectedProcedure
     .input(z.object({ id: z.string().min(1, '小组id不存在') }))
     .use(requireRoles(['admin', 'teacher']))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.groupController.remove(input.id)
+      const res = await ctx.groupController.remove(input.id);
       if (!res.success)
-        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
       else
-        return res
+        return res;
     }),
-})
+});

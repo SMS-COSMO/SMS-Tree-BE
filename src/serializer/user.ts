@@ -1,4 +1,4 @@
-import type { TRawUser } from '../db/db'
+import type { TRawUser } from '../db/db';
 
 export type TUser = ReturnType<typeof userSerializer>
 
@@ -9,5 +9,5 @@ export function userSerializer(content: TRawUser, groupIds: string[]) {
     role: content.role,
     createdAt: content.createdAt,
     groupIds,
-  }
+  };
 }

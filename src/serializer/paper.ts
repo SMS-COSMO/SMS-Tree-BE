@@ -1,4 +1,4 @@
-import type { TRawPaper } from '../db/db'
+import type { TRawPaper } from '../db/db';
 
 export type TPaper = ReturnType<typeof paperSerializer>
 
@@ -15,11 +15,11 @@ export function paperSerializer(content: TRawPaper, groupId: string) {
     canDownload: content.canDownload,
     rate: content.rate,
     createdAt: content.createdAt,
-  }
+  };
 }
 
 export function paperFileSerializer(paper: TRawPaper) {
   return {
     S3FileId: paper.S3FileId,
-  }
+  };
 }

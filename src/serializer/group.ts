@@ -1,4 +1,4 @@
-import type { TRawGroup } from '../db/db'
+import type { TRawGroup } from '../db/db';
 
 export type TGroup = ReturnType<typeof groupSerializer>
 
@@ -10,5 +10,5 @@ export function groupSerializer(content: TRawGroup, members: string[], papers: s
     members,
     papers,
     createdAt: content.createdAt,
-  }
+  };
 }
