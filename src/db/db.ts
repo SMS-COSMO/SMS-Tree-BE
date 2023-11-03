@@ -8,10 +8,10 @@ import type { papers } from './schema/paper';
 import type { groups } from './schema/group';
 
 const options = (() => {
-  switch (env.DATABASE_CONNECTION_TYPE) {
-  case 'local': return { url: 'file:local.sqlite' };
-  case 'remote': return { url: env.DATABASE_URL, authToken: env.DATABASE_AUTH_TOKEN };
-  }
+    switch (env.DATABASE_CONNECTION_TYPE) {
+    case 'local': return { url: 'file:local.sqlite' };
+    case 'remote': return { url: env.DATABASE_URL, authToken: env.DATABASE_AUTH_TOKEN };
+    }
 })();
 
 const client = createClient(options);

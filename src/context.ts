@@ -18,9 +18,9 @@ const paperController = newGlobal.paperController ?? new PaperController();
 const groupController = newGlobal.groupController ?? new GroupController();
 
 if (process.env.NODE_ENV !== 'production') {
-  newGlobal.userController = userController;
-  newGlobal.paperController = paperController;
-  newGlobal.groupController = groupController;
+    newGlobal.userController = userController;
+    newGlobal.paperController = paperController;
+    newGlobal.groupController = groupController;
 }
 
 interface CreateContextOptions {
@@ -33,14 +33,14 @@ interface CreateContextOptions {
  * @credits https://create.t3.gg/en/usage/trpc#-servertrpccontextts'
  */
 export function createInnerContext(opts: CreateContextOptions) {
-  return {
-    user: opts.user,
-    db,
-    userController,
-    s3,
-    paperController,
-    groupController,
-  };
+    return {
+        user: opts.user,
+        db,
+        userController,
+        s3,
+        paperController,
+        groupController,
+    };
 }
 
 /**
@@ -49,9 +49,9 @@ export function createInnerContext(opts: CreateContextOptions) {
  * @link https://trpc.io/docs/context
  */
 export async function createContext(opts: trpcExpress.CreateExpressContextOptions) {
-  const { req } = opts;
-  const user = await userController.getUserFromHeader(req);
-  return createInnerContext({ user });
+    const { req } = opts;
+    const user = await userController.getUserFromHeader(req);
+    return createInnerContext({ user });
 }
 
 export type Context = inferAsyncReturnType<typeof createContext>
