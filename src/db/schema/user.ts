@@ -5,7 +5,7 @@ export const users = sqliteTable('users', {
   id: text('id', { mode: 'text' }).primaryKey().$defaultFn(() => nanoid(12)),
   username: text('username', { mode: 'text' }).notNull(),
   password: text('password', { mode: 'text' }).notNull(),
-  role: text('role', { enum: ['admin', 'student', 'teacher'] }).notNull(),
+  role: text('role', { enum: ['admin', 'student', 'teacher'] }).notNull().default('student'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
