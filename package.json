@@ -13,12 +13,13 @@
   },
   "scripts": {
     "dev": "tsx watch ./src/server.ts",
-    "studio": "pnpm drizzle-kit studio",
     "start": "node --loader tsx ./src/server.ts",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "migrate": "pnpm drizzle-kit generate:sqlite && tsx ./src/scripts/migrate.ts",
-    "push": "pnpm drizzle-kit push:sqlite"
+    "db:studio": "pnpm drizzle-kit studio",
+    "db:migrate": "pnpm drizzle-kit generate:sqlite && tsx ./src/scripts/migrate.ts",
+    "db:push": "pnpm drizzle-kit push:sqlite",
+    "db:createAdmin": "tsx ./src/scripts/createAdmin.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.438.0",
