@@ -1,6 +1,5 @@
 {
     "env": {
-        "browser": true,
         "es2021": true
     },
     "extends": [
@@ -8,17 +7,12 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "overrides": [],
-    "parser": "vue-eslint-parser",
     "parserOptions": {
         "parser": "@typescript-eslint/parser",
         "ecmaVersion": 12,
-        "sourceType": "module",
-        "extraFileExtensions": [
-            ".vue"
-        ]
+        "sourceType": "module"
     },
     "plugins": [
-        "vue",
         "@typescript-eslint"
     ],
     "rules": {
