@@ -37,11 +37,8 @@ export class PaperController {
     async getContent(id: string) {
         try {
             const info = (await db.select().from(papers).where(eq(papers.id, id)))[0];
-            const groupId = (
-                await db.select().from(papersToGroups).where(eq(papersToGroups.paperId, id))
-            )[0].groupId;
-
-            const paper = paperSerializer(info, groupId);
+            const groups = await db.select().from(papersToGroups).where(eq(papersToGroups.paperId, id));
+            const paper = paperSerializer(info, groups.length ? groups[0].groupId : '');
             return { success: true, res: paper, message: '查询成功' };
         }
         catch (err) {
@@ -68,16 +65,14 @@ export class PaperController {
         try {
             const res: Array<TPaper> = [];
             for (const paper of await db.select().from(papers)) {
-                const groupId = (
-                    await db.select().from(papersToGroups).where(eq(papersToGroups.paperId, paper.id))
-                )[0].groupId;
-                res.push(paperSerializer(paper, groupId));
+                const groups = await db.select().from(papersToGroups).where(eq(papersToGroups.paperId, paper.id));
+                res.push(paperSerializer(paper, groups.length ? groups[0].groupId : ''));
             }
 
             return { success: true, res, message: '查询成功' };
         }
         catch (err) {
-            return { success: false, message: '论文不存在' };
+            return { success: false, message: '服务器内部错误' };
         }
     }
 }
