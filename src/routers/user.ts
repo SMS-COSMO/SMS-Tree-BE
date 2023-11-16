@@ -47,6 +47,10 @@ export const userRouter = router({
             return user;
         }),
 
+    tokenValidity: protectedProcedure
+        .input(z.object({ token: z.string() }))
+        .query(() => true), // protectedProcedure will check if user is logged in
+
     refreshAccessToken: publicProcedure
         .meta({ description: '@return { accessToken: newAccessToken, refreshToken: newRefreshToken }' })
         .input(z.object({ username: z.string(), refreshToken: z.string() }))
