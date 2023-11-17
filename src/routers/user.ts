@@ -37,6 +37,16 @@ export const userRouter = router({
                 return res;
         }),
 
+    modifyPassword: protectedProcedure
+        .input(z.object({ oldPassword: z.string(), newPassword: z.string().min(8, { message: '用户密码长度应至少为8' }) }))
+        .mutation(async ({ ctx, input }) => {
+            const res = await ctx.userController.modifyPassword(ctx.user, input.oldPassword, input.newPassword);
+            if (!res.success)
+                throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
+            else
+                return res;
+        }),
+
     login: publicProcedure
         .meta({ description: '@return {userId: string; username: string; role: "admin" | "student" | "teacher"; accessToken: string; refreshToken: string;}' })
         .input(z.object({ id: z.string(), password: z.string().min(1) }))
@@ -49,7 +59,7 @@ export const userRouter = router({
 
     tokenValidity: protectedProcedure
         .input(z.object({ token: z.string() }))
-        .query(() => true), // protectedProcedure will check if user is logged in
+        .query(() => { }), // protectedProcedure will check if user is logged in
 
     refreshAccessToken: publicProcedure
         .meta({ description: '@return { accessToken: newAccessToken, refreshToken: newRefreshToken }' })
