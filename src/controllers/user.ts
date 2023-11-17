@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { and, eq } from 'drizzle-orm';
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
-import type { TNewUser } from '../db/db';
+import type { TNewUser, TRawUser } from '../db/db';
 import { db } from '../db/db';
 import { refreshTokens, users } from '../db/schema/user';
 import { Auth } from '../utils/auth';
@@ -71,6 +71,16 @@ export class UserController {
         await db.insert(users).values(newUsers);
 
         return { success: true, message: '创建成功！' };
+    }
+
+    async modifyPassword(user: TRawUser, oldPassword: string, newPassword: string) {
+        if (!await bcrypt.compare(oldPassword, user.password))
+            return { success: false, message: '旧密码不正确' };
+        if (newPassword === oldPassword)
+            return { success: false, message: '新密码不能与旧密码相同' };
+
+        await db.update(users).set({ password: await bcrypt.hash(newPassword, 8) }).where(eq(users.id, user.id));
+        return { success: true, message: '修改成功' };
     }
 
     async login(id: string, password: string) {
