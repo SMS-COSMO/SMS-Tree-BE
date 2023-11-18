@@ -48,7 +48,19 @@ export const groupRouter = router({
             else
                 return res.res;
         }),
-
+    modify: protectedProcedure
+        .input(z.object({
+            groupId: z.string().min(1, '不可以传入空ID'),
+            newMembers: z.array(z.string().min(1, '不可以传入空ID')).nonempty('不可以传入空ID列表'),
+            newLeader: z.string().min(1, '不可以传入空ID')
+        }))
+        .mutation(async ({ ctx, input }) => {
+            const res = await ctx.groupController.modifyMembers(input.groupId, input.newMembers, input.newLeader);
+            if (!res.success)
+                throw new TRPCError({ code: 'BAD_REQUEST', message: res.message });
+            else
+                return res;
+        }),
     remove: protectedProcedure
         .input(z.object({ id: z.string().min(1, '小组id不存在') }))
         .use(requireRoles(['admin', 'teacher']))
