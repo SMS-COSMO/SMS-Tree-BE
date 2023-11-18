@@ -62,9 +62,12 @@ export class GroupController {
     }
 
     async modifyMembers(groupId: string, newMembers: string[], newLeader: string) {
-        if (!newMembers.includes(newLeader)) return { success: false, message: '组长需要包含于组员中' };
-        if (!(await db.select().from(groups).where(eq(groups.id, groupId))).length) return { success: false, message: '小组id不存在' };
+        if (!newMembers.includes(newLeader))
+            return { success: false, message: '组长需要包含于组员中' };
+        if (!(await db.select().from(groups).where(eq(groups.id, groupId))).length)
+            return { success: false, message: '小组id不存在' };
         try {
+            await db.update(groups).set({ leader: newLeader }).where(eq(groups.id, groupId));
             await db.delete(usersToGroups).where(eq(usersToGroups.groupId, groupId));
             for (const userId of newMembers) {
                 await db.insert(usersToGroups).values({ userId, groupId });
