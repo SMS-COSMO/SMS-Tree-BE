@@ -5,13 +5,14 @@ import type { TGroup } from '../serializer/group';
 import { groupSerializer } from '../serializer/group';
 import { usersToGroups } from '../db/schema/userToGroup';
 import { papersToGroups } from '../db/schema/paperToGroup';
+import { LibsqlError } from '@libsql/client';
 
 export class GroupController {
     async create(newGroup: {
-    leader: string
-    members: string[]
-    papers?: string[]
-    archived?: boolean
+        leader: string
+        members: string[]
+        papers?: string[]
+        archived?: boolean
     }) {
         const { leader, members, papers, archived } = newGroup;
         const group = {
@@ -57,6 +58,23 @@ export class GroupController {
             return { success: true, message: '删除成功' };
         } catch (err) {
             return { success: false, message: '小组不存在' };
+        }
+    }
+
+    async modifyMembers(groupId: string, newMembers: string[], newLeader: string) {
+        if (!newMembers.includes(newLeader)) return { success: false, message: '组长需要包含于组员中' };
+        if (!(await db.select().from(groups).where(eq(groups.id, groupId))).length) return { success: false, message: '小组id不存在' };
+        try {
+            await db.delete(usersToGroups).where(eq(usersToGroups.groupId, groupId));
+            for (const userId of newMembers) {
+                await db.insert(usersToGroups).values({ userId, groupId });
+            }
+            return { success: true, message: '修改成功' };
+        }
+        catch (err) {
+            if (err instanceof LibsqlError && err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY')
+                return { success: false, message: '传入了不存在的用户id' };
+            return { success: false, message: '服务器内部错误' };
         }
     }
 
