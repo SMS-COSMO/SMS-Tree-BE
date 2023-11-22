@@ -58,7 +58,6 @@ export const userRouter = router({
         }),
 
     tokenValidity: protectedProcedure
-        .input(z.object({ token: z.string() }))
         .query(() => { }), // protectedProcedure will check if user is logged in
 
     refreshAccessToken: publicProcedure
