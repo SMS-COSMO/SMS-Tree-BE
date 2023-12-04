@@ -9,6 +9,7 @@ import { refreshTokens, users } from '../db/schema/user';
 import { Auth } from '../utils/auth';
 import { type TUser, userSerializer } from '../serializer/user';
 import { usersToGroups } from '../db/schema/userToGroup';
+import { classesToUsers } from '../db/schema/classToUser';
 
 export class UserController {
     private auth: Auth;
@@ -104,14 +105,20 @@ export class UserController {
         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     }
 
+    async getFullUser(basicUser: TRawUser) {
+        const groupIds = (
+            await db.select().from(usersToGroups).where(eq(usersToGroups.userId, basicUser.id))
+        ).map(item => item.groupId);
+        const classIds = (
+            await db.select().from(classesToUsers).where(eq(classesToUsers.userId, basicUser.id))
+        ).map(item => item.classId);
+        return userSerializer(basicUser, groupIds, classIds);
+    }
+
     async getProfile(id: string) {
         try {
-            const content = (await db.select().from(users).where(eq(users.id, id)))[0];
-            const groupIds = (
-                await db.select().from(usersToGroups)
-                    .where(eq(usersToGroups.userId, content.id))
-            ).map(item => item.groupId);
-            return { success: true, res: userSerializer(content, groupIds) };
+            const basicUser = (await db.select().from(users).where(eq(users.id, id)))[0];
+            return { success: true, res: await this.getFullUser(basicUser) };
         }
         catch (err) {
             return { success: false, message: '用户不存在' };
@@ -121,13 +128,8 @@ export class UserController {
     async getStudentList() {
         try {
             const res: Array<TUser> = [];
-            for (const content of await db.select().from(users).where(eq(users.role, 'student'))) {
-                const groupIds = (
-                    await db.select().from(usersToGroups)
-                        .where(eq(usersToGroups.userId, content.id))
-                ).map(item => item.groupId);
-                res.push(userSerializer(content, groupIds));
-            }
+            for (const basicUser of await db.select().from(users).where(eq(users.role, 'student')))
+                res.push(await this.getFullUser(basicUser));
 
             return { success: true, res };
         }

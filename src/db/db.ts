@@ -6,6 +6,7 @@ import type { refreshTokens } from './schema/user';
 import { users } from './schema/user';
 import type { papers } from './schema/paper';
 import type { groups } from './schema/group';
+import { classes } from './schema/class';
 
 const options = (() => {
     switch (env.DATABASE_CONNECTION_TYPE) {
@@ -19,11 +20,14 @@ export const db = drizzle(client);
 export const selectUserSchema = createSelectSchema(users);
 export const insertUserSchema = createInsertSchema(users);
 
-export type TRawUser = typeof users.$inferSelect
-export type TNewUser = typeof users.$inferInsert
-export type TRefreshToken = typeof refreshTokens.$inferInsert
+export type TRawUser = typeof users.$inferSelect;
+export type TNewUser = typeof users.$inferInsert;
+export type TRefreshToken = typeof refreshTokens.$inferInsert;
 
-export type TRawPaper = typeof papers.$inferSelect
-export type TNewPaper = typeof papers.$inferInsert
+export type TRawPaper = typeof papers.$inferSelect;
+export type TNewPaper = typeof papers.$inferInsert;
 
-export type TRawGroup = typeof groups.$inferSelect
+export type TRawGroup = typeof groups.$inferSelect;
+
+export type TRawClass = typeof classes.$inferSelect;
+export type TNewClass = typeof classes.$inferInsert;
