@@ -12,11 +12,13 @@ export class GroupController {
         leader: string
         members: string[]
         papers?: string[]
+        classId: string
         archived?: boolean
     }) {
-        const { leader, members, papers, archived } = newGroup;
+        const { leader, members, papers, classId, archived } = newGroup;
         const group = {
             leader,
+            classId,
             archived: archived ?? false,
         };
 
