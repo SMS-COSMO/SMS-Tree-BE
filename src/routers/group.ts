@@ -16,6 +16,7 @@ export const groupRouter = router({
                 )
                 .min(1, '请填写组员ID')
                 .max(64, '组员最多64人'),
+            classId: z.string().min(1, '班级ID不存在'),
             papers: z
                 .array(z.string())
                 .max(8, '小组最多8篇论文')

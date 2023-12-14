@@ -9,6 +9,7 @@ export function groupSerializer(basicGroup: TRawGroup, members: string[], papers
         leader: basicGroup.leader,
         members,
         papers,
+        classId: basicGroup.classId,
         createdAt: basicGroup.createdAt,
     };
 }
