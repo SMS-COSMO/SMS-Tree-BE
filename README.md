@@ -1,3 +1,5 @@
+# 已迁移至 Nuxt [https://github.com/SMS-COSMO/SMS-Tree](https://github.com/SMS-COSMO/SMS-Tree)
+
 ## 本地开发
 
 ### 1. 安装依赖
